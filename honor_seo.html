@@ -154,6 +154,20 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 유튜브 영상 섹션 복구 -->
+            <div class="mt-16 p-6 bg-slate-800 rounded-xl border border-slate-700 text-center">
+                <h3 class="text-lg font-bold text-white mb-6"><i class="fa-solid fa-star text-yellow-400"></i> 기념 영상 <i class="fa-solid fa-star text-yellow-400"></i></h3>
+                <a href="https://youtu.be/nE_m75AIlGw" target="_blank" class="block w-full bg-black rounded-lg border border-slate-600 overflow-hidden shadow-2xl hover:opacity-90 transition relative group" style="aspect-ratio: 16/9;">
+                    <img src="https://img.youtube.com/vi/nE_m75AIlGw/hqdefault.jpg" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-300">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-play text-white text-2xl ml-1"></i></div>
+                        <div class="mt-4 flex items-center gap-2 text-white font-bold bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm text-sm">
+                            <i class="fa-brands fa-youtube text-red-500 text-lg"></i> YouTube에서 기념 영상 보기
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- 3. MESSAGES 섹션 (메시지 작성 및 목록) -->
@@ -178,7 +192,7 @@
             <!-- 메시지 목록 -->
             <div id="messages-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
                 <!-- 로딩 표시 -->
-                <div class="col-span-full text-center py-10 text-slate-500">
+                <div id="loading-spinner" class="col-span-full text-center py-10 text-slate-500">
                     <i class="fa-solid fa-spinner animate-spin text-2xl mb-2"></i>
                     <p>메시지를 불러오고 있습니다...</p>
                 </div>
@@ -191,81 +205,90 @@
         <p>© 2025 서재석 사장님 퇴임기념 HR혁신그룹 최성진 드림</p>
     </footer>
 
-    <!-- Firebase SDK (저장을 위해 필요) -->
+    <!-- Firebase SDK 및 로직 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase 설정 (환경 변수 사용)
+        // Firebase 설정 (환경에서 제공)
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        let currentUser = null;
-
-        // 1. 익명 로그인 (글을 쓰기 위해 필요)
-        async function initAuth() {
-            try {
-                await signInAnonymously(auth);
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                });
-            } catch (error) {
-                console.error("Auth error:", error);
-            }
-        }
-        initAuth();
-
-        // 2. 메시지 불러오기 (실시간)
-        const messagesContainer = document.getElementById('messages-container');
+        let user = null;
         const colPath = collection(db, 'artifacts', appId, 'public', 'data', 'rolling_paper');
 
-        onSnapshot(colPath, (snapshot) => {
-            messagesContainer.innerHTML = '';
-            const colors = ['bg-yellow-100', 'bg-blue-100', 'bg-green-100', 'bg-purple-100', 'bg-pink-100', 'bg-orange-100'];
+        // 인증 초기화
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+
+        // 데이터 리스너 설정
+        const setupListener = () => {
+            const messagesContainer = document.getElementById('messages-container');
             
-            // 데이터가 없을 때
-            if (snapshot.empty) {
-                messagesContainer.innerHTML = '<p class="col-span-full text-center py-10 text-slate-500">아직 등록된 메시지가 없습니다. 첫 번째 메시지를 남겨주세요!</p>';
+            onSnapshot(colPath, (snapshot) => {
+                const loadingSpinner = document.getElementById('loading-spinner');
+                if (loadingSpinner) loadingSpinner.remove();
+
+                messagesContainer.innerHTML = '';
+                const colors = ['bg-yellow-100', 'bg-blue-100', 'bg-green-100', 'bg-purple-100', 'bg-pink-100', 'bg-orange-100'];
+                
+                if (snapshot.empty) {
+                    messagesContainer.innerHTML = '<p class="col-span-full text-center py-10 text-slate-500 italic">아직 등록된 메시지가 없습니다. 첫 번째 메시지를 남겨주세요!</p>';
+                    return;
+                }
+
+                const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // 생성 시간순으로 정렬
+                docs.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+
+                docs.forEach((data, index) => {
+                    const colorClass = colors[index % colors.length];
+                    const card = document.createElement('div');
+                    card.className = `${colorClass} p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800 animate-fade-in-up message-card`;
+                    card.innerHTML = `
+                        <p class="font-medium mb-3 leading-relaxed">"${data.message}"</p>
+                        <p class="text-sm font-bold text-right text-slate-600">- ${data.sender} -</p>
+                    `;
+                    messagesContainer.appendChild(card);
+                });
+            }, (error) => {
+                console.error("Firestore error:", error);
+                messagesContainer.innerHTML = '<p class="col-span-full text-center text-red-400">데이터를 불러오는 중 오류가 발생했습니다.</p>';
+            });
+        };
+
+        // 인증 상태 감시 및 시작
+        onAuthStateChanged(auth, (u) => {
+            user = u;
+            if (user) {
+                setupListener();
+            }
+        });
+
+        initAuth();
+
+        // 메시지 등록 함수
+        const submitBtn = document.getElementById('submitMsgBtn');
+        submitBtn.onclick = async () => {
+            if (!user) {
+                alert("인증 중입니다. 잠시만 기다려 주세요.");
                 return;
             }
 
-            // 최신 글이 아래로 가거나 정렬하려면 JS에서 처리
-            const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // 생성 시간순으로 정렬 (간단하게)
-            docs.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-
-            docs.forEach((data, index) => {
-                const colorClass = colors[index % colors.length];
-                const card = document.createElement('div');
-                card.className = `${colorClass} p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800 animate-fade-in-up message-card`;
-                card.innerHTML = `
-                    <p class="font-medium mb-3 leading-relaxed">"${data.message}"</p>
-                    <p class="text-sm font-bold text-right text-slate-600">- ${data.sender} -</p>
-                `;
-                messagesContainer.appendChild(card);
-            });
-        }, (error) => {
-            console.error("Firestore error:", error);
-            messagesContainer.innerHTML = '<p class="col-span-full text-center text-red-400">메시지를 불러오는 중 오류가 발생했습니다.</p>';
-        });
-
-        // 3. 메시지 등록하기
-        const submitBtn = document.getElementById('submitMsgBtn');
-        submitBtn.onclick = async () => {
             const sender = document.getElementById('senderName').value.trim();
             const message = document.getElementById('messageBody').value.trim();
 
             if (!sender || !message) {
                 alert("성함과 메시지 내용을 모두 입력해주세요!");
-                return;
-            }
-
-            if (!currentUser) {
-                alert("로그인 중입니다. 잠시 후 다시 시도해주세요.");
                 return;
             }
 
@@ -277,9 +300,8 @@
                     sender: sender,
                     message: message,
                     createdAt: serverTimestamp(),
-                    uid: currentUser.uid
+                    uid: user.uid
                 });
-                // 입력창 비우기
                 document.getElementById('senderName').value = '';
                 document.getElementById('messageBody').value = '';
                 alert("사장님께 소중한 마음이 전달되었습니다!");
@@ -294,19 +316,32 @@
     </script>
 
     <script>
-        // 탭 전환 및 폭죽 애니메이션 등 기존 기능 유지
+        // 탭 전환 및 일반 UI 로직
         function switchTab(tabName) {
             const sections = ['intro', 'history', 'messages'];
             sections.forEach(sec => {
-                document.getElementById(sec + '-section').classList.add('hidden-section');
-                document.getElementById('tab-' + sec).classList.remove('active-tab');
-                document.getElementById('tab-' + sec).classList.add('inactive-tab');
+                const el = document.getElementById(sec + '-section');
+                if (el) {
+                    el.classList.add('hidden-section');
+                    el.classList.remove('animate-fade-in-up');
+                }
+                const btn = document.getElementById('tab-' + sec);
+                if (btn) {
+                    btn.classList.remove('active-tab');
+                    btn.classList.add('inactive-tab');
+                }
             });
+
             const selected = document.getElementById(tabName + '-section');
-            selected.classList.remove('hidden-section');
-            setTimeout(() => selected.classList.add('animate-fade-in-up'), 10);
-            document.getElementById('tab-' + tabName).classList.remove('inactive-tab');
-            document.getElementById('tab-' + tabName).classList.add('active-tab');
+            if (selected) {
+                selected.classList.remove('hidden-section');
+                setTimeout(() => selected.classList.add('animate-fade-in-up'), 10);
+            }
+            const selectedBtn = document.getElementById('tab-' + tabName);
+            if (selectedBtn) {
+                selectedBtn.classList.remove('inactive-tab');
+                selectedBtn.classList.add('active-tab');
+            }
             window.scrollTo(0, 0);
         }
 
