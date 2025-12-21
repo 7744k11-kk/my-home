@@ -21,24 +21,25 @@
         .active-tab { color: #FBBF24; font-weight: bold; border-bottom: 2px solid #FBBF24; }
         .inactive-tab { color: #94A3B8; }
 
-        /* 음악 재생 중일 때 버튼 애니메이션 */
         .music-playing { animation: pulse 2s infinite; }
         @keyframes pulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
             70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
         }
+
+        /* 메시지 카드 스타일 */
+        .message-card { transition: all 0.3s ease; }
+        .message-card:hover { transform: translateY(-5px); }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen relative overflow-x-hidden pb-10">
 
-    <!-- 🎶 오디오 플레이어 (GitHub에 올린 bgm.m4a 연결) -->
+    <!-- 🎶 오디오 플레이어 -->
     <audio id="bgmPlayer" loop preload="auto">
         <source src="bgm.m4a" type="audio/mp4">
         <source src="bgm.m4a" type="audio/x-m4a">
     </audio>
-    
-    <!-- 수동 파일 선택 (백업용) -->
     <input type="file" id="bgmInput" accept="audio/*" style="display: none;" onchange="handleFileSelect(this)">
 
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50"></div>
@@ -54,7 +55,6 @@
                 </div>
             </div>
             <div class="flex items-center gap-4 text-sm font-medium">
-                <!-- BGM 컨트롤 UI -->
                 <div id="musicBtn" onclick="toggleMusic()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 rounded-full px-4 py-1.5 border border-slate-600 cursor-pointer transition-all">
                     <i id="musicIcon" class="fa-solid fa-play text-yellow-400"></i>
                     <span id="musicText" class="text-xs text-slate-300">음악 재생</span>
@@ -111,7 +111,6 @@
                 <button onclick="fireConfetti()" class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full font-bold text-slate-900 hover:scale-105 transition shadow-lg flex items-center gap-2 mx-auto">
                     <i class="fa-solid fa-wand-magic-sparkles"></i> 축하 폭죽 터뜨리기
                 </button>
-                <p class="text-slate-500 text-xs mt-2">* 상단의 '음악 재생'을 누르면 기념 음악이 흐릅니다.</p>
             </div>
         </div>
 
@@ -121,66 +120,67 @@
             <div class="relative border-l-2 border-slate-700 ml-4 md:ml-8 space-y-12">
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
                         <span class="text-2xl font-bold text-yellow-500 font-mono">1989</span>
-                        <span class="text-xl font-bold text-white">포스코 입사</span>
+                        <span class="text-xl font-bold">포스코 입사</span>
                     </div>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2010</span>
-                        <span class="text-xl font-bold text-white">광양제철소 행정섭외그룹장</span>
+                        <span class="text-xl font-bold">광양제철소 행정섭외그룹장</span>
                     </div>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2015</span>
-                        <span class="text-xl font-bold text-white">포스코와이드 경영전략실장</span>
+                        <span class="text-xl font-bold">포스코와이드 경영전략실장</span>
                     </div>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2019</span>
-                        <span class="text-xl font-bold text-white">포스코교육재단 부이사장</span>
+                        <span class="text-xl font-bold">포스코교육재단 부이사장</span>
                     </div>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2023.6</span>
-                        <span class="text-xl font-bold text-white">포스코지와이에스테크 대표이사</span>
+                        <span class="text-xl font-bold">포스코지와이에스테크 대표이사</span>
                     </div>
                 </div>
-            </div>
-            
-            <div class="mt-16 p-6 bg-slate-800 rounded-xl border border-slate-700 text-center">
-                <h3 class="text-lg font-bold text-white mb-6"><i class="fa-solid fa-star text-yellow-400"></i> 기념 영상 <i class="fa-solid fa-star text-yellow-400"></i></h3>
-                <a href="https://youtu.be/nE_m75AIlGw" target="_blank" class="block w-full bg-black rounded-lg border border-slate-600 overflow-hidden shadow-2xl hover:opacity-90 transition relative group" style="aspect-ratio: 16/9;">
-                    <img src="https://img.youtube.com/vi/nE_m75AIlGw/hqdefault.jpg" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-300">
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-play text-white text-2xl ml-1"></i></div>
-                    </div>
-                </a>
             </div>
         </div>
 
-        <!-- 3. MESSAGES 섹션 -->
-        <div id="messages-section" class="hidden-section">
-            <h2 class="text-3xl font-bold text-center mb-10">마음을 담은 메시지</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-yellow-100 p-6 rounded-2xl shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"회사를 위해 헌신해주셔서 감사합니다. 앞날에 행복만 가득하시길!"</p>
-                    <p class="text-sm font-bold text-right">- 최성진 -</p>
+        <!-- 3. MESSAGES 섹션 (메시지 작성 및 목록) -->
+        <div id="messages-section" class="hidden-section space-y-8">
+            <h2 class="text-3xl font-bold text-center mb-2">마음을 담은 메시지</h2>
+            <p class="text-center text-slate-400 mb-8">직원들이 사장님께 드리는 롤링페이퍼입니다.</p>
+
+            <!-- 메시지 작성 폼 -->
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl space-y-4">
+                <div class="flex gap-4">
+                    <input type="text" id="senderName" placeholder="성함 (예: 최성진)" class="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 w-1/3 focus:outline-none focus:border-yellow-500 text-white">
+                    <div class="flex-1 text-slate-400 text-sm flex items-center italic">
+                        <i class="fa-solid fa-pen-nib mr-2"></i> 사장님께 감사의 마음을 전하세요.
+                    </div>
                 </div>
-                <div class="bg-blue-100 p-6 rounded-2xl shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"따뜻한 말씀 잊지 못할 거예요. 존경합니다!"</p>
-                    <p class="text-sm font-bold text-right">- 신한나 -</p>
-                </div>
-                <div class="border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center justify-center p-6 text-slate-500 min-h-[150px]">
-                    <span class="text-sm font-medium text-center">메시지 추가하기<br>(준비 중)</span>
+                <textarea id="messageBody" rows="3" placeholder="메시지 내용을 입력하세요..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 text-white"></textarea>
+                <button id="submitMsgBtn" class="w-full py-3 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl font-bold text-slate-900 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> 메시지 등록하기
+                </button>
+            </div>
+
+            <!-- 메시지 목록 -->
+            <div id="messages-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+                <!-- 로딩 표시 -->
+                <div class="col-span-full text-center py-10 text-slate-500">
+                    <i class="fa-solid fa-spinner animate-spin text-2xl mb-2"></i>
+                    <p>메시지를 불러오고 있습니다...</p>
                 </div>
             </div>
         </div>
@@ -191,13 +191,110 @@
         <p>© 2025 서재석 사장님 퇴임기념 HR혁신그룹 최성진 드림</p>
     </footer>
 
-    <script>
-        const bgmPlayer = document.getElementById('bgmPlayer');
-        const musicIcon = document.getElementById('musicIcon');
-        const musicText = document.getElementById('musicText');
-        const musicBtn = document.getElementById('musicBtn');
-        let isPlaying = false;
+    <!-- Firebase SDK (저장을 위해 필요) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Firebase 설정 (환경 변수 사용)
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        let currentUser = null;
+
+        // 1. 익명 로그인 (글을 쓰기 위해 필요)
+        async function initAuth() {
+            try {
+                await signInAnonymously(auth);
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                });
+            } catch (error) {
+                console.error("Auth error:", error);
+            }
+        }
+        initAuth();
+
+        // 2. 메시지 불러오기 (실시간)
+        const messagesContainer = document.getElementById('messages-container');
+        const colPath = collection(db, 'artifacts', appId, 'public', 'data', 'rolling_paper');
+
+        onSnapshot(colPath, (snapshot) => {
+            messagesContainer.innerHTML = '';
+            const colors = ['bg-yellow-100', 'bg-blue-100', 'bg-green-100', 'bg-purple-100', 'bg-pink-100', 'bg-orange-100'];
+            
+            // 데이터가 없을 때
+            if (snapshot.empty) {
+                messagesContainer.innerHTML = '<p class="col-span-full text-center py-10 text-slate-500">아직 등록된 메시지가 없습니다. 첫 번째 메시지를 남겨주세요!</p>';
+                return;
+            }
+
+            // 최신 글이 아래로 가거나 정렬하려면 JS에서 처리
+            const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // 생성 시간순으로 정렬 (간단하게)
+            docs.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
+
+            docs.forEach((data, index) => {
+                const colorClass = colors[index % colors.length];
+                const card = document.createElement('div');
+                card.className = `${colorClass} p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800 animate-fade-in-up message-card`;
+                card.innerHTML = `
+                    <p class="font-medium mb-3 leading-relaxed">"${data.message}"</p>
+                    <p class="text-sm font-bold text-right text-slate-600">- ${data.sender} -</p>
+                `;
+                messagesContainer.appendChild(card);
+            });
+        }, (error) => {
+            console.error("Firestore error:", error);
+            messagesContainer.innerHTML = '<p class="col-span-full text-center text-red-400">메시지를 불러오는 중 오류가 발생했습니다.</p>';
+        });
+
+        // 3. 메시지 등록하기
+        const submitBtn = document.getElementById('submitMsgBtn');
+        submitBtn.onclick = async () => {
+            const sender = document.getElementById('senderName').value.trim();
+            const message = document.getElementById('messageBody').value.trim();
+
+            if (!sender || !message) {
+                alert("성함과 메시지 내용을 모두 입력해주세요!");
+                return;
+            }
+
+            if (!currentUser) {
+                alert("로그인 중입니다. 잠시 후 다시 시도해주세요.");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 등록 중...';
+
+            try {
+                await addDoc(colPath, {
+                    sender: sender,
+                    message: message,
+                    createdAt: serverTimestamp(),
+                    uid: currentUser.uid
+                });
+                // 입력창 비우기
+                document.getElementById('senderName').value = '';
+                document.getElementById('messageBody').value = '';
+                alert("사장님께 소중한 마음이 전달되었습니다!");
+            } catch (error) {
+                console.error("Error adding message:", error);
+                alert("메시지 등록에 실패했습니다. 다시 시도해 주세요.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> 메시지 등록하기';
+            }
+        };
+    </script>
+
+    <script>
+        // 탭 전환 및 폭죽 애니메이션 등 기존 기능 유지
         function switchTab(tabName) {
             const sections = ['intro', 'history', 'messages'];
             sections.forEach(sec => {
@@ -213,6 +310,12 @@
             window.scrollTo(0, 0);
         }
 
+        const bgmPlayer = document.getElementById('bgmPlayer');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+        const musicBtn = document.getElementById('musicBtn');
+        let isPlaying = false;
+
         function toggleMusic() {
             if (isPlaying) {
                 bgmPlayer.pause();
@@ -221,15 +324,13 @@
                 musicBtn.classList.remove('music-playing');
                 isPlaying = false;
             } else {
-                // 재생 시도
                 bgmPlayer.play().then(() => {
                     musicIcon.className = 'fa-solid fa-pause text-yellow-400';
                     musicText.innerText = '음악 일시정지';
                     musicBtn.classList.add('music-playing');
                     isPlaying = true;
-                }).catch(err => {
-                    console.error("재생 오류:", err);
-                    alert("음악 파일(bgm.m4a)을 불러올 수 없습니다. GitHub에 파일이 정상적으로 올라갔는지 확인해 주세요.");
+                }).catch(() => {
+                    alert("음악 재생을 위해 화면을 한 번 터치한 후 다시 눌러주세요.");
                 });
             }
         }
