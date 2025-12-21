@@ -10,74 +10,75 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap');
         body { font-family: 'Noto Sans KR', sans-serif; }
         
-        /* 섹션 애니메이션 */
         .animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         
-        /* 폭죽 효과 */
         .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
         
-        /* ★ 중요: 섹션 숨김 처리 (강력하게 적용) */
         .hidden-section { display: none !important; }
         
-        /* 탭 스타일 */
-        .active-tab { color: #FBBF24; font-weight: bold; border-bottom: 2px solid #FBBF24; } /* 노란색 */
-        .inactive-tab { color: #94A3B8; } /* 회색 */
+        .active-tab { color: #FBBF24; font-weight: bold; border-bottom: 2px solid #FBBF24; }
+        .inactive-tab { color: #94A3B8; }
+
+        /* 음악 재생 중일 때 버튼 애니메이션 */
+        .music-playing { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen relative overflow-x-hidden pb-10">
 
-    <!-- 🎶 오디오 플레이어 -->
-    <audio id="bgmPlayer" loop>
-        <source src="" type="audio/mp4">
+    <!-- 🎶 오디오 플레이어 (GitHub에 올린 bgm.m4a 연결) -->
+    <audio id="bgmPlayer" loop preload="auto">
+        <source src="bgm.m4a" type="audio/mp4">
+        <source src="bgm.m4a" type="audio/x-m4a">
     </audio>
-    <!-- 파일 선택 (숨김) -->
+    
+    <!-- 수동 파일 선택 (백업용) -->
     <input type="file" id="bgmInput" accept="audio/*" style="display: none;" onchange="handleFileSelect(this)">
 
-    <!-- 🎉 폭죽 효과 컨테이너 -->
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50"></div>
 
-    <!-- 네비게이션 (상단 고정) -->
     <nav class="fixed top-0 w-full bg-slate-900/95 backdrop-blur-md z-40 border-b border-slate-700 shadow-lg">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
-            <div class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-amber-600 bg-clip-text text-transparent">
-                Honor & Respect
+            <div class="flex items-center gap-4">
+                <a href="honor_list.html" class="text-slate-400 hover:text-white transition" title="목록으로 이동">
+                    <i class="fa-solid fa-chevron-left text-xl"></i>
+                </a>
+                <div class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-amber-600 bg-clip-text text-transparent">
+                    Honor & Respect
+                </div>
             </div>
             <div class="flex items-center gap-4 text-sm font-medium">
-                <!-- BGM 컨트롤 -->
-                <div class="flex items-center bg-slate-800 rounded-full px-3 py-1 border border-slate-700">
-                    <button onclick="toggleMusic()" class="p-2 text-yellow-400 hover:text-white transition" title="음악 켜기/끄기">
-                        <i id="musicIcon" class="fa-solid fa-volume-xmark text-lg"></i>
-                    </button>
-                    <div class="w-px h-4 bg-slate-600 mx-2"></div>
-                    <button onclick="document.getElementById('bgmInput').click()" class="flex items-center gap-1 text-slate-300 hover:text-yellow-400 transition pr-1">
-                        <i class="fa-solid fa-upload"></i> <span class="text-xs">BGM 선택</span>
-                    </button>
+                <!-- BGM 컨트롤 UI -->
+                <div id="musicBtn" onclick="toggleMusic()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 rounded-full px-4 py-1.5 border border-slate-600 cursor-pointer transition-all">
+                    <i id="musicIcon" class="fa-solid fa-play text-yellow-400"></i>
+                    <span id="musicText" class="text-xs text-slate-300">음악 재생</span>
                 </div>
-
-                <!-- 탭 메뉴 -->
-                <div class="flex gap-4">
-                    <button onclick="switchTab('intro')" id="tab-intro" class="active-tab pb-1 hover:text-white transition">메인</button>
-                    <button onclick="switchTab('history')" id="tab-history" class="inactive-tab pb-1 hover:text-white transition">발자취</button>
-                    <button onclick="switchTab('messages')" id="tab-messages" class="inactive-tab pb-1 hover:text-white transition">메시지</button>
+                
+                <div class="flex gap-4 ml-2">
+                    <button onclick="switchTab('intro')" id="tab-intro" class="active-tab pb-1">메인</button>
+                    <button onclick="switchTab('history')" id="tab-history" class="inactive-tab pb-1">발자취</button>
+                    <button onclick="switchTab('messages')" id="tab-messages" class="inactive-tab pb-1">메시지</button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- 메인 컨텐츠 영역 -->
     <main class="pt-36 md:pt-28 max-w-2xl mx-auto px-4">
 
-        <!-- 1. INTRO 섹션 (메인) -->
+        <!-- 1. INTRO 섹션 -->
         <div id="intro-section" class="flex flex-col items-center text-center space-y-8 animate-fade-in-up">
             <div class="relative group cursor-pointer" onclick="fireConfetti()">
                 <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-amber-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000"></div>
                 <div class="relative w-48 h-48 rounded-full bg-slate-800 border-4 border-slate-900 flex items-center justify-center overflow-hidden">
-                    <!-- 최신 사장님 사진 적용 -->
-                    <img src="https://postfiles.pstatic.net/MjAyNTEyMTJfOTUg/MDAxNzY1NTQ4NzQyMzU2.msASzRdPZhZdGIVxJPGU1rNw3kaAYXM5HY6SuMWefDAg.nZs8J27V3wvXExm8MobQis-38qDMqQejdJmwzXJUmDkg.JPEG/%EC%84%9C%EC%9E%AC%EC%84%9D_%EC%82%AC%EC%9E%A5%EB%8B%98.jpg?type=w773" 
+                    <img src="ceo_seo.jpg" 
                          alt="서재석 사장님" class="w-full h-full object-cover" 
-                         onerror="this.src='https://placehold.co/400x400/333/FFF?text=이미지+로드+실패';">
+                         onerror="this.src='https://placehold.co/400x400/333/FFF?text=사진+확인불가';">
                 </div>
                 <div class="absolute bottom-0 right-0 bg-yellow-500 text-slate-900 p-2 rounded-full shadow-lg">
                     <i class="fa-solid fa-thumbs-up"></i>
@@ -85,11 +86,11 @@
             </div>
 
             <div class="space-y-2">
-                <div class="inline-block px-3 py-1 rounded-full bg-slate-800 text-yellow-500 text-xs font-bold tracking-wider mb-2 border border-slate-700">
+                <div class="inline-block px-3 py-1 rounded-full bg-slate-800 text-yellow-500 text-xs font-bold mb-2 border border-slate-700">
                     FOREVER LEADER
                 </div>
                 <h1 class="text-4xl md:text-5xl font-bold text-white">서재석 대표이사 사장님</h1>
-                <p class="text-xl text-slate-400 font-light">1989년 입사 - 2026년 퇴임 | 명예로운 퇴임을 축하드립니다</p>
+                <p class="text-xl text-slate-400 font-light">1989년 입사 - 2025년 12월 퇴임 | 명예로운 퇴임을 축하드립니다</p>
             </div>
 
             <div class="p-8 bg-slate-800/50 rounded-2xl border border-slate-700 max-w-lg w-full shadow-2xl">
@@ -106,23 +107,24 @@
                 </div>
             </div>
 
-            <button onclick="fireConfetti()" class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full font-bold text-slate-900 hover:scale-105 transition shadow-lg flex items-center gap-2 mx-auto">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> 축하 폭죽 터뜨리기
-            </button>
+            <div class="flex flex-col gap-4">
+                <button onclick="fireConfetti()" class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full font-bold text-slate-900 hover:scale-105 transition shadow-lg flex items-center gap-2 mx-auto">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> 축하 폭죽 터뜨리기
+                </button>
+                <p class="text-slate-500 text-xs mt-2">* 상단의 '음악 재생'을 누르면 기념 음악이 흐릅니다.</p>
+            </div>
         </div>
 
-        <!-- 2. HISTORY 섹션 (발자취) -->
+        <!-- 2. HISTORY 섹션 -->
         <div id="history-section" class="hidden-section space-y-8">
-            <h2 class="text-3xl font-bold text-center mb-10">열정을 담아온 여정</h2>
+            <h2 class="text-3xl font-bold text-center mb-10 text-white">열정을 담아온 여정</h2>
             <div class="relative border-l-2 border-slate-700 ml-4 md:ml-8 space-y-12">
-                <!-- 타임라인 아이템들 -->
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
                     <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1">
                         <span class="text-2xl font-bold text-yellow-500 font-mono">1989</span>
                         <span class="text-xl font-bold text-white">포스코 입사</span>
                     </div>
-                    <p class="text-slate-400">포스코 입사</p>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
@@ -130,7 +132,6 @@
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2010</span>
                         <span class="text-xl font-bold text-white">광양제철소 행정섭외그룹장</span>
                     </div>
-                    <p class="text-slate-400">포스코 광양제철소 행정섭외그룹장 (상무보)</p>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
@@ -138,7 +139,6 @@
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2015</span>
                         <span class="text-xl font-bold text-white">포스코와이드 경영전략실장</span>
                     </div>
-                    <p class="text-slate-400">포스코와이드 경영전략실장 (상무)</p>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
@@ -146,7 +146,6 @@
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2019</span>
                         <span class="text-xl font-bold text-white">포스코교육재단 부이사장</span>
                     </div>
-                    <p class="text-slate-400">포스코교육재단 부이사장 (전무)</p>
                 </div>
                 <div class="relative pl-8 md:pl-12 group">
                     <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
@@ -154,142 +153,83 @@
                         <span class="text-2xl font-bold text-yellow-500 font-mono">2023.6</span>
                         <span class="text-xl font-bold text-white">포스코지와이에스테크 대표이사</span>
                     </div>
-                    <p class="text-slate-400">포스코지와이에스테크 대표이사 (사장)</p>
                 </div>
             </div>
-
-            <!-- 유튜브 영상 링크 -->
+            
             <div class="mt-16 p-6 bg-slate-800 rounded-xl border border-slate-700 text-center">
-                <h3 class="text-lg font-bold text-white mb-6 flex justify-center items-center gap-2">
-                    <i class="fa-solid fa-star text-yellow-400"></i> 기념 영상 (Special Video) <i class="fa-solid fa-star text-yellow-400"></i>
-                </h3>
-                
+                <h3 class="text-lg font-bold text-white mb-6"><i class="fa-solid fa-star text-yellow-400"></i> 기념 영상 <i class="fa-solid fa-star text-yellow-400"></i></h3>
                 <a href="https://youtu.be/nE_m75AIlGw" target="_blank" class="block w-full bg-black rounded-lg border border-slate-600 overflow-hidden shadow-2xl hover:opacity-90 transition relative group" style="aspect-ratio: 16/9;">
-                    <img src="https://img.youtube.com/vi/nE_m75AIlGw/hqdefault.jpg" alt="영상 썸네일" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-300">
+                    <img src="https://img.youtube.com/vi/nE_m75AIlGw/hqdefault.jpg" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-300">
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition duration-300">
-                            <i class="fa-solid fa-play text-white text-2xl ml-1"></i>
-                        </div>
-                        <div class="mt-4 flex items-center gap-2 text-white font-bold bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm">
-                            <i class="fa-brands fa-youtube text-red-500"></i> YouTube에서 영상 보기
-                        </div>
+                        <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-play text-white text-2xl ml-1"></i></div>
                     </div>
                 </a>
-                <p class="mt-4 text-slate-400 text-sm">* 위 화면을 클릭하면 유튜브로 이동하여 재생됩니다.</p>
             </div>
         </div>
 
-        <!-- 3. MESSAGES 섹션 (메시지) -->
+        <!-- 3. MESSAGES 섹션 -->
         <div id="messages-section" class="hidden-section">
-            <h2 class="text-3xl font-bold text-center mb-2">마음을 담은 메시지</h2>
-            <p class="text-center text-slate-400 mb-10">직원들이 직접 남긴 롤링페이퍼입니다.</p>
+            <h2 class="text-3xl font-bold text-center mb-10">마음을 담은 메시지</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-yellow-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
+                <div class="bg-yellow-100 p-6 rounded-2xl shadow-lg text-slate-800">
                     <p class="font-medium mb-3">"회사를 위해 헌신해주셔서 감사합니다. 앞날에 행복만 가득하시길!"</p>
                     <p class="text-sm font-bold text-right">- 최성진 -</p>
                 </div>
-                <div class="bg-blue-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
+                <div class="bg-blue-100 p-6 rounded-2xl shadow-lg text-slate-800">
                     <p class="font-medium mb-3">"따뜻한 말씀 잊지 못할 거예요. 존경합니다!"</p>
                     <p class="text-sm font-bold text-right">- 신한나 -</p>
                 </div>
-                <div class="bg-green-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"힘든 시기에 든든한 버팀목이 되어주셨습니다. 제2의 인생을 응원합니다."</p>
-                    <p class="text-sm font-bold text-right">- 이문휘 -</p>
-                </div>
-                <div class="bg-purple-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"사장님의 유머감각 그리울 거예요! 건강하세요!"</p>
-                    <p class="text-sm font-bold text-right">- 정미경 -</p>
-                </div>
-                <div class="bg-blue-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"안정화된 회사 만들어 주셔서 감사합니다."</p>
-                    <p class="text-sm font-bold text-right">- 박잔우 -</p>
-                </div>
-                <div class="bg-purple-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"늘 좋은 말씀해주시고, 아껴주셔서 고맙습니다. 많이 보고싶을겁니다."</p>
-                    <p class="text-sm font-bold text-right">- 강태현 -</p>
-                </div>
-                <div class="bg-pink-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"멋진 우리 사장님! 사랑합니다!"</p>
-                    <p class="text-sm font-bold text-right">- HR혁신그룹일동 -</p>
-                </div>
-                <div class="bg-orange-100 p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800">
-                    <p class="font-medium mb-3">"사장님 덕분에 우리회사가 빛났습니다. 늘 건강하세요!"</p>
-                    <p class="text-sm font-bold text-right">- 양현성 -</p>
-                </div>
-                
                 <div class="border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center justify-center p-6 text-slate-500 min-h-[150px]">
-                    <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center mb-2">
-                        <span class="text-2xl font-light">+</span>
-                    </div>
-                    <span class="text-sm font-medium text-center">메시지 추가하기<br>(보기 전용)</span>
+                    <span class="text-sm font-medium text-center">메시지 추가하기<br>(준비 중)</span>
                 </div>
             </div>
         </div>
 
     </main>
 
-    <!-- 푸터 -->
     <footer class="text-center py-8 text-slate-600 text-sm border-t border-slate-800 mt-10">
         <p>© 2025 서재석 사장님 퇴임기념 HR혁신그룹 최성진 드림</p>
     </footer>
 
-    <!-- 스크립트 -->
     <script>
-        // 탭 전환 기능 (중요: 다른 섹션 확실히 숨기기)
+        const bgmPlayer = document.getElementById('bgmPlayer');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
+        const musicBtn = document.getElementById('musicBtn');
+        let isPlaying = false;
+
         function switchTab(tabName) {
             const sections = ['intro', 'history', 'messages'];
-            
-            // 모든 섹션 숨기고 탭 비활성화
             sections.forEach(sec => {
                 document.getElementById(sec + '-section').classList.add('hidden-section');
-                document.getElementById(sec + '-section').classList.remove('animate-fade-in-up');
-                
-                const btn = document.getElementById('tab-' + sec);
-                btn.classList.remove('active-tab');
-                btn.classList.add('inactive-tab');
+                document.getElementById('tab-' + sec).classList.remove('active-tab');
+                document.getElementById('tab-' + sec).classList.add('inactive-tab');
             });
-
-            // 선택된 섹션만 보이기
-            const selectedSection = document.getElementById(tabName + '-section');
-            selectedSection.classList.remove('hidden-section');
-            
-            // 애니메이션 재실행을 위해 약간의 딜레이 후 클래스 추가
-            setTimeout(() => {
-                selectedSection.classList.add('animate-fade-in-up');
-            }, 10);
-
-            const selectedBtn = document.getElementById('tab-' + tabName);
-            selectedBtn.classList.remove('inactive-tab');
-            selectedBtn.classList.add('active-tab');
-
-            // 화면 맨 위로 스크롤
+            const selected = document.getElementById(tabName + '-section');
+            selected.classList.remove('hidden-section');
+            setTimeout(() => selected.classList.add('animate-fade-in-up'), 10);
+            document.getElementById('tab-' + tabName).classList.remove('inactive-tab');
+            document.getElementById('tab-' + tabName).classList.add('active-tab');
             window.scrollTo(0, 0);
         }
 
-        // 음악 재생/정지 및 파일 선택 기능
-        const bgmPlayer = document.getElementById('bgmPlayer');
-        const musicIcon = document.getElementById('musicIcon');
-        let isPlaying = false;
-
         function toggleMusic() {
-            if (bgmPlayer.src === "" || bgmPlayer.src === window.location.href) {
-                alert("상단의 'BGM 선택' 버튼을 눌러 음악 파일을 선택해주세요.");
-                return;
-            }
-            
             if (isPlaying) {
                 bgmPlayer.pause();
-                musicIcon.classList.remove('fa-volume-high');
-                musicIcon.classList.add('fa-volume-xmark');
+                musicIcon.className = 'fa-solid fa-play text-yellow-400';
+                musicText.innerText = '음악 재생';
+                musicBtn.classList.remove('music-playing');
                 isPlaying = false;
             } else {
+                // 재생 시도
                 bgmPlayer.play().then(() => {
-                    musicIcon.classList.remove('fa-volume-xmark');
-                    musicIcon.classList.add('fa-volume-high');
+                    musicIcon.className = 'fa-solid fa-pause text-yellow-400';
+                    musicText.innerText = '음악 일시정지';
+                    musicBtn.classList.add('music-playing');
                     isPlaying = true;
                 }).catch(err => {
-                    console.log(err);
-                    alert("음악 재생을 위해 화면을 한 번 터치해주세요.");
+                    console.error("재생 오류:", err);
+                    alert("음악 파일(bgm.m4a)을 불러올 수 없습니다. GitHub에 파일이 정상적으로 올라갔는지 확인해 주세요.");
                 });
             }
         }
@@ -297,37 +237,22 @@
         function handleFileSelect(input) {
             const file = input.files[0];
             if (file) {
-                const fileUrl = URL.createObjectURL(file);
-                bgmPlayer.src = fileUrl;
-                // 파일 선택 후 자동 재생 시도
-                setTimeout(() => toggleMusic(), 500);
+                bgmPlayer.src = URL.createObjectURL(file);
+                isPlaying = false;
+                toggleMusic();
             }
         }
 
-        // 폭죽 효과 기능
         function fireConfetti() {
             const container = document.getElementById('confetti-container');
-            const colors = ['#FFD700', '#FF69B4', '#00BFFF', '#32CD32'];
-            
             for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
-                confetti.classList.add('confetti');
+                confetti.className = 'confetti';
                 confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.top = '-10px';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.backgroundColor = ['#FFD700', '#FF69B4', '#00BFFF', '#32CD32'][Math.floor(Math.random()*4)];
                 confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                
                 container.appendChild(confetti);
-                
-                // 애니메이션 끝난 후 제거
-                setTimeout(() => {
-                    confetti.remove();
-                }, 4000);
-            }
-            
-            // 음악이 선택되어 있으면 재생 시도
-            if (!isPlaying && bgmPlayer.src !== "" && bgmPlayer.src !== window.location.href) {
-                toggleMusic();
+                setTimeout(() => confetti.remove(), 4000);
             }
         }
     </script>
