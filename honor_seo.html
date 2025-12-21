@@ -8,58 +8,39 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap');
-        body { font-family: 'Noto Sans KR', sans-serif; }
-        
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #0f172a; }
         .animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        
         .confetti { position: absolute; width: 10px; height: 10px; background-color: #f00; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
-        
         .hidden-section { display: none !important; }
-        
         .active-tab { color: #FBBF24; font-weight: bold; border-bottom: 2px solid #FBBF24; }
         .inactive-tab { color: #94A3B8; }
-
-        .music-playing { animation: pulse 2s infinite; }
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
-        }
-
-        /* 메시지 카드 스타일 */
-        .message-card { transition: all 0.3s ease; }
-        .message-card:hover { transform: translateY(-5px); }
+        #toast { visibility: hidden; min-width: 250px; margin-left: -125px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid #FBBF24; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
     </style>
 </head>
 <body class="bg-slate-900 text-white min-h-screen relative overflow-x-hidden pb-10">
 
-    <!-- 🎶 오디오 플레이어 -->
+    <div id="toast">알림 메시지</div>
+
     <audio id="bgmPlayer" loop preload="auto">
         <source src="bgm.m4a" type="audio/mp4">
-        <source src="bgm.m4a" type="audio/x-m4a">
     </audio>
-    <input type="file" id="bgmInput" accept="audio/*" style="display: none;" onchange="handleFileSelect(this)">
 
     <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50"></div>
 
     <nav class="fixed top-0 w-full bg-slate-900/95 backdrop-blur-md z-40 border-b border-slate-700 shadow-lg">
         <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-4">
-                <a href="honor_list.html" class="text-slate-400 hover:text-white transition" title="목록으로 이동">
-                    <i class="fa-solid fa-chevron-left text-xl"></i>
-                </a>
-                <div class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-amber-600 bg-clip-text text-transparent">
-                    Honor & Respect
-                </div>
+                <a href="honor_list.html" class="text-slate-400 hover:text-white transition"><i class="fa-solid fa-chevron-left text-xl"></i></a>
+                <div class="text-xl font-bold bg-gradient-to-r from-yellow-400 to-amber-600 bg-clip-text text-transparent">Honor & Respect</div>
             </div>
             <div class="flex items-center gap-4 text-sm font-medium">
                 <div id="musicBtn" onclick="toggleMusic()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 rounded-full px-4 py-1.5 border border-slate-600 cursor-pointer transition-all">
                     <i id="musicIcon" class="fa-solid fa-play text-yellow-400"></i>
                     <span id="musicText" class="text-xs text-slate-300">음악 재생</span>
                 </div>
-                
                 <div class="flex gap-4 ml-2">
                     <button onclick="switchTab('intro')" id="tab-intro" class="active-tab pb-1">메인</button>
                     <button onclick="switchTab('history')" id="tab-history" class="inactive-tab pb-1">발자취</button>
@@ -70,325 +51,145 @@
     </nav>
 
     <main class="pt-36 md:pt-28 max-w-2xl mx-auto px-4">
-
-        <!-- 1. INTRO 섹션 -->
         <div id="intro-section" class="flex flex-col items-center text-center space-y-8 animate-fade-in-up">
-            <div class="relative group cursor-pointer" onclick="fireConfetti()">
-                <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-amber-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000"></div>
-                <div class="relative w-48 h-48 rounded-full bg-slate-800 border-4 border-slate-900 flex items-center justify-center overflow-hidden">
-                    <img src="ceo_seo.jpg" 
-                         alt="서재석 사장님" class="w-full h-full object-cover" 
-                         onerror="this.src='https://placehold.co/400x400/333/FFF?text=사진+확인불가';">
-                </div>
-                <div class="absolute bottom-0 right-0 bg-yellow-500 text-slate-900 p-2 rounded-full shadow-lg">
-                    <i class="fa-solid fa-thumbs-up"></i>
-                </div>
+            <div class="relative w-48 h-48 rounded-full bg-slate-800 border-4 border-slate-900 overflow-hidden shadow-2xl">
+                <img src="ceo_seo.jpg" alt="서재석 사장님" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/400x400/333/FFF?text=사진확인불가';">
             </div>
-
-            <div class="space-y-2">
-                <div class="inline-block px-3 py-1 rounded-full bg-slate-800 text-yellow-500 text-xs font-bold mb-2 border border-slate-700">
-                    FOREVER LEADER
-                </div>
-                <h1 class="text-4xl md:text-5xl font-bold text-white">서재석 대표이사 사장님</h1>
-                <p class="text-xl text-slate-400 font-light">1989년 입사 - 2025년 12월 퇴임 | 명예로운 퇴임을 축하드립니다</p>
-            </div>
-
-            <div class="p-8 bg-slate-800/50 rounded-2xl border border-slate-700 max-w-lg w-full shadow-2xl">
-                <i class="fa-solid fa-award text-5xl text-yellow-500 mb-4"></i>
-                <h3 class="text-xl font-semibold mb-4 text-white">디지털 감사패</h3>
-                <p class="text-slate-300 leading-relaxed italic mb-6">
-                    "귀하께서는 탁월한 리더십과 헌신으로<br>
-                    회사의 발전에 지대한 공헌을 하셨습니다.<br>
-                    우리 모두의 존경과 감사의 마음을 담아<br>
-                    이 패를 드립니다."
-                </p>
-                <div class="mt-4 pt-4 border-t border-slate-700 text-sm text-slate-500">
-                    2025년 12월 15일 | 임직원 일동 드림
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-4">
-                <button onclick="fireConfetti()" class="px-8 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-full font-bold text-slate-900 hover:scale-105 transition shadow-lg flex items-center gap-2 mx-auto">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> 축하 폭죽 터뜨리기
-                </button>
-            </div>
+            <h1 class="text-4xl font-bold">서재석 대표이사 사장님</h1>
+            <p class="text-slate-400">포스코지와이에스테크 | 1989 - 2025</p>
+            <button onclick="fireConfetti()" class="px-8 py-3 bg-yellow-500 rounded-full font-bold text-slate-900 hover:scale-105 transition shadow-lg">축하 폭죽 터뜨리기</button>
         </div>
 
-        <!-- 2. HISTORY 섹션 -->
         <div id="history-section" class="hidden-section space-y-8">
             <h2 class="text-3xl font-bold text-center mb-10 text-white">열정을 담아온 여정</h2>
-            <div class="relative border-l-2 border-slate-700 ml-4 md:ml-8 space-y-12">
-                <div class="relative pl-8 md:pl-12 group">
-                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
-                        <span class="text-2xl font-bold text-yellow-500 font-mono">1989</span>
-                        <span class="text-xl font-bold">포스코 입사</span>
-                    </div>
-                </div>
-                <div class="relative pl-8 md:pl-12 group">
-                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
-                        <span class="text-2xl font-bold text-yellow-500 font-mono">2010</span>
-                        <span class="text-xl font-bold">광양제철소 행정섭외그룹장</span>
-                    </div>
-                </div>
-                <div class="relative pl-8 md:pl-12 group">
-                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
-                        <span class="text-2xl font-bold text-yellow-500 font-mono">2015</span>
-                        <span class="text-xl font-bold">포스코와이드 경영전략실장</span>
-                    </div>
-                </div>
-                <div class="relative pl-8 md:pl-12 group">
-                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
-                        <span class="text-2xl font-bold text-yellow-500 font-mono">2019</span>
-                        <span class="text-xl font-bold">포스코교육재단 부이사장</span>
-                    </div>
-                </div>
-                <div class="relative pl-8 md:pl-12 group">
-                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-1 text-white">
-                        <span class="text-2xl font-bold text-yellow-500 font-mono">2023.6</span>
-                        <span class="text-xl font-bold">포스코지와이에스테크 대표이사</span>
-                    </div>
-                </div>
+            <div class="relative border-l-2 border-slate-700 ml-4 md:ml-8 space-y-12 pl-4 text-white font-medium">
+                <div>1989 - 포스코 입사</div>
+                <div>2010 - 광양제철소 행정섭외그룹장</div>
+                <div>2023.6 - 포스코지와이에스테크 대표이사</div>
             </div>
-
-            <!-- 유튜브 영상 섹션 복구 -->
-            <div class="mt-16 p-6 bg-slate-800 rounded-xl border border-slate-700 text-center">
-                <h3 class="text-lg font-bold text-white mb-6"><i class="fa-solid fa-star text-yellow-400"></i> 기념 영상 <i class="fa-solid fa-star text-yellow-400"></i></h3>
-                <a href="https://youtu.be/nE_m75AIlGw" target="_blank" class="block w-full bg-black rounded-lg border border-slate-600 overflow-hidden shadow-2xl hover:opacity-90 transition relative group" style="aspect-ratio: 16/9;">
-                    <img src="https://img.youtube.com/vi/nE_m75AIlGw/hqdefault.jpg" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition duration-300">
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <div class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-play text-white text-2xl ml-1"></i></div>
-                        <div class="mt-4 flex items-center gap-2 text-white font-bold bg-black/50 px-4 py-2 rounded-full backdrop-blur-sm text-sm">
-                            <i class="fa-brands fa-youtube text-red-500 text-lg"></i> YouTube에서 기념 영상 보기
-                        </div>
-                    </div>
+            <div class="mt-16 p-6 bg-slate-800 rounded-xl text-center">
+                <h3 class="text-lg font-bold text-white mb-6">기념 영상</h3>
+                <a href="https://youtu.be/nE_m75AIlGw" target="_blank" class="block w-full bg-black rounded-lg relative aspect-video overflow-hidden shadow-xl">
+                    <img src="https://img.youtube.com/vi/nE_m75AIlGw/hqdefault.jpg" class="w-full h-full object-cover opacity-70">
+                    <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-white text-4xl"></i></div>
                 </a>
             </div>
         </div>
 
-        <!-- 3. MESSAGES 섹션 (메시지 작성 및 목록) -->
         <div id="messages-section" class="hidden-section space-y-8">
             <h2 class="text-3xl font-bold text-center mb-2">마음을 담은 메시지</h2>
-            <p class="text-center text-slate-400 mb-8">직원들이 사장님께 드리는 롤링페이퍼입니다.</p>
-
-            <!-- 메시지 작성 폼 -->
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl space-y-4">
-                <div class="flex gap-4">
-                    <input type="text" id="senderName" placeholder="성함 (예: 최성진)" class="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 w-1/3 focus:outline-none focus:border-yellow-500 text-white">
-                    <div class="flex-1 text-slate-400 text-sm flex items-center italic">
-                        <i class="fa-solid fa-pen-nib mr-2"></i> 사장님께 감사의 마음을 전하세요.
-                    </div>
-                </div>
-                <textarea id="messageBody" rows="3" placeholder="메시지 내용을 입력하세요..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 focus:outline-none focus:border-yellow-500 text-white"></textarea>
-                <button id="submitMsgBtn" class="w-full py-3 bg-gradient-to-r from-yellow-500 to-amber-600 rounded-xl font-bold text-slate-900 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-paper-plane"></i> 메시지 등록하기
-                </button>
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700 space-y-4 shadow-2xl">
+                <input type="text" id="senderName" placeholder="성함" class="bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 w-full text-white outline-none focus:border-yellow-500">
+                <textarea id="messageBody" rows="3" placeholder="메시지를 남겨주세요..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white outline-none focus:border-yellow-500"></textarea>
+                <button id="submitMsgBtn" class="w-full py-3 bg-yellow-500 rounded-xl font-bold text-slate-900 hover:bg-yellow-400 transition-all">메시지 등록하기</button>
             </div>
-
-            <!-- 메시지 목록 -->
-            <div id="messages-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
-                <!-- 로딩 표시 -->
-                <div id="loading-spinner" class="col-span-full text-center py-10 text-slate-500">
-                    <i class="fa-solid fa-spinner animate-spin text-2xl mb-2"></i>
-                    <p>메시지를 불러오고 있습니다...</p>
-                </div>
-            </div>
+            <div id="messages-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10"></div>
         </div>
-
     </main>
 
     <footer class="text-center py-8 text-slate-600 text-sm border-t border-slate-800 mt-10">
-        <p>© 2025 서재석 사장님 퇴임기념 HR혁신그룹 최성진 드림</p>
+        <p>© 2025 서재석 사장님 퇴임기념</p>
     </footer>
 
-    <!-- Firebase SDK 및 로직 -->
+    <!-- Firebase 스크립트 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase 설정 (환경에서 제공)
-        const firebaseConfig = JSON.parse(__firebase_config);
+        // 사장님이 보내주신 Firebase 설정값 적용 완료
+        const firebaseConfig = {
+            apiKey: "AIzaSyBueXRrTaM20E9F1h78cE8ehMH1AG7w8bg",
+            authDomain: "gys-hr-archive.firebaseapp.com",
+            projectId: "gys-hr-archive",
+            storageBucket: "gys-hr-archive.firebasestorage.app",
+            messagingSenderId: "999034742962",
+            appId: "1:999034742962:web:5c84fb6800857a14e681ab"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        let user = null;
-        const colPath = collection(db, 'artifacts', appId, 'public', 'data', 'rolling_paper');
+        // 익명 로그인 및 메시지 로드
+        signInAnonymously(auth).then(() => {
+            const colRef = collection(db, "rolling_paper");
+            const q = query(colRef, orderBy("createdAt", "desc"));
 
-        // 인증 초기화
-        const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-        };
-
-        // 데이터 리스너 설정
-        const setupListener = () => {
-            const messagesContainer = document.getElementById('messages-container');
-            
-            onSnapshot(colPath, (snapshot) => {
-                const loadingSpinner = document.getElementById('loading-spinner');
-                if (loadingSpinner) loadingSpinner.remove();
-
-                messagesContainer.innerHTML = '';
-                const colors = ['bg-yellow-100', 'bg-blue-100', 'bg-green-100', 'bg-purple-100', 'bg-pink-100', 'bg-orange-100'];
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('messages-container');
+                container.innerHTML = '';
+                const colors = ['bg-yellow-100', 'bg-blue-100', 'bg-green-100', 'bg-purple-100', 'bg-pink-100'];
                 
                 if (snapshot.empty) {
-                    messagesContainer.innerHTML = '<p class="col-span-full text-center py-10 text-slate-500 italic">아직 등록된 메시지가 없습니다. 첫 번째 메시지를 남겨주세요!</p>';
+                    container.innerHTML = '<p class="col-span-full text-center py-10 text-slate-500 italic">아직 작성된 메시지가 없습니다. 첫 번째 주인공이 되어보세요!</p>';
                     return;
                 }
 
-                const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // 생성 시간순으로 정렬
-                docs.sort((a, b) => (a.createdAt?.seconds || 0) - (b.createdAt?.seconds || 0));
-
-                docs.forEach((data, index) => {
-                    const colorClass = colors[index % colors.length];
-                    const card = document.createElement('div');
-                    card.className = `${colorClass} p-6 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-sm shadow-lg text-slate-800 animate-fade-in-up message-card`;
-                    card.innerHTML = `
-                        <p class="font-medium mb-3 leading-relaxed">"${data.message}"</p>
-                        <p class="text-sm font-bold text-right text-slate-600">- ${data.sender} -</p>
-                    `;
-                    messagesContainer.appendChild(card);
+                snapshot.forEach((doc, i) => {
+                    const data = doc.data();
+                    container.innerHTML += `
+                        <div class="${colors[i % 5]} p-5 rounded-2xl shadow-lg text-slate-800 animate-fade-in-up message-card">
+                            <p class="font-medium mb-2 leading-relaxed">"${data.message}"</p>
+                            <p class="text-xs font-bold text-right text-slate-500">- ${data.sender} -</p>
+                        </div>`;
                 });
-            }, (error) => {
-                console.error("Firestore error:", error);
-                messagesContainer.innerHTML = '<p class="col-span-full text-center text-red-400">데이터를 불러오는 중 오류가 발생했습니다.</p>';
             });
-        };
 
-        // 인증 상태 감시 및 시작
-        onAuthStateChanged(auth, (u) => {
-            user = u;
-            if (user) {
-                setupListener();
-            }
+            document.getElementById('submitMsgBtn').onclick = async () => {
+                const sender = document.getElementById('senderName').value.trim();
+                const message = document.getElementById('messageBody').value.trim();
+                if(!sender || !message) {
+                    window.showToast("성함과 내용을 모두 입력해주세요!");
+                    return;
+                }
+
+                try {
+                    await addDoc(colRef, { sender, message, createdAt: serverTimestamp() });
+                    document.getElementById('senderName').value = '';
+                    document.getElementById('messageBody').value = '';
+                    window.showToast("소중한 메시지가 등록되었습니다!");
+                } catch(e) {
+                    console.error(e);
+                    alert("저장에 실패했습니다. Firebase Rules(규칙) 설정을 확인해주세요.");
+                }
+            };
         });
 
-        initAuth();
-
-        // 메시지 등록 함수
-        const submitBtn = document.getElementById('submitMsgBtn');
-        submitBtn.onclick = async () => {
-            if (!user) {
-                alert("인증 중입니다. 잠시만 기다려 주세요.");
-                return;
-            }
-
-            const sender = document.getElementById('senderName').value.trim();
-            const message = document.getElementById('messageBody').value.trim();
-
-            if (!sender || !message) {
-                alert("성함과 메시지 내용을 모두 입력해주세요!");
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> 등록 중...';
-
-            try {
-                await addDoc(colPath, {
-                    sender: sender,
-                    message: message,
-                    createdAt: serverTimestamp(),
-                    uid: user.uid
-                });
-                document.getElementById('senderName').value = '';
-                document.getElementById('messageBody').value = '';
-                alert("사장님께 소중한 마음이 전달되었습니다!");
-            } catch (error) {
-                console.error("Error adding message:", error);
-                alert("메시지 등록에 실패했습니다. 다시 시도해 주세요.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> 메시지 등록하기';
-            }
-        };
+        window.showToast = (m) => { const t = document.getElementById("toast"); t.innerText=m; t.className="show"; setTimeout(()=>t.className="",3000); };
     </script>
 
     <script>
-        // 탭 전환 및 일반 UI 로직
-        function switchTab(tabName) {
-            const sections = ['intro', 'history', 'messages'];
-            sections.forEach(sec => {
-                const el = document.getElementById(sec + '-section');
-                if (el) {
-                    el.classList.add('hidden-section');
-                    el.classList.remove('animate-fade-in-up');
-                }
-                const btn = document.getElementById('tab-' + sec);
-                if (btn) {
-                    btn.classList.remove('active-tab');
-                    btn.classList.add('inactive-tab');
-                }
+        function switchTab(t) {
+            ['intro', 'history', 'messages'].forEach(s => {
+                const sec = document.getElementById(s+'-section');
+                if(sec) sec.classList.add('hidden-section');
+                const tab = document.getElementById('tab-'+s);
+                if(tab) tab.classList.replace('active-tab', 'inactive-tab');
             });
-
-            const selected = document.getElementById(tabName + '-section');
-            if (selected) {
-                selected.classList.remove('hidden-section');
-                setTimeout(() => selected.classList.add('animate-fade-in-up'), 10);
-            }
-            const selectedBtn = document.getElementById('tab-' + tabName);
-            if (selectedBtn) {
-                selectedBtn.classList.remove('inactive-tab');
-                selectedBtn.classList.add('active-tab');
-            }
-            window.scrollTo(0, 0);
+            const activeSec = document.getElementById(t+'-section');
+            if(activeSec) activeSec.classList.remove('hidden-section');
+            const activeTab = document.getElementById('tab-'+t);
+            if(activeTab) activeTab.classList.replace('inactive-tab', 'active-tab');
+            window.scrollTo(0,0);
         }
-
-        const bgmPlayer = document.getElementById('bgmPlayer');
-        const musicIcon = document.getElementById('musicIcon');
-        const musicText = document.getElementById('musicText');
-        const musicBtn = document.getElementById('musicBtn');
-        let isPlaying = false;
-
+        const bgm = document.getElementById('bgmPlayer');
+        let playing = false;
         function toggleMusic() {
-            if (isPlaying) {
-                bgmPlayer.pause();
-                musicIcon.className = 'fa-solid fa-play text-yellow-400';
-                musicText.innerText = '음악 재생';
-                musicBtn.classList.remove('music-playing');
-                isPlaying = false;
-            } else {
-                bgmPlayer.play().then(() => {
-                    musicIcon.className = 'fa-solid fa-pause text-yellow-400';
-                    musicText.innerText = '음악 일시정지';
-                    musicBtn.classList.add('music-playing');
-                    isPlaying = true;
-                }).catch(() => {
-                    alert("음악 재생을 위해 화면을 한 번 터치한 후 다시 눌러주세요.");
-                });
-            }
+            if(playing) { bgm.pause(); document.getElementById('musicIcon').className='fa-solid fa-play text-yellow-400'; }
+            else { bgm.play(); document.getElementById('musicIcon').className='fa-solid fa-pause text-yellow-400'; }
+            playing = !playing;
         }
-
-        function handleFileSelect(input) {
-            const file = input.files[0];
-            if (file) {
-                bgmPlayer.src = URL.createObjectURL(file);
-                isPlaying = false;
-                toggleMusic();
-            }
-        }
-
         function fireConfetti() {
-            const container = document.getElementById('confetti-container');
-            for (let i = 0; i < 50; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.backgroundColor = ['#FFD700', '#FF69B4', '#00BFFF', '#32CD32'][Math.floor(Math.random()*4)];
-                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                container.appendChild(confetti);
-                setTimeout(() => confetti.remove(), 4000);
+            const c = document.getElementById('confetti-container');
+            for(let i=0; i<60; i++) {
+                const div = document.createElement('div');
+                div.className='confetti';
+                div.style.left = Math.random()*100+'%';
+                div.style.backgroundColor = ['#FFD700', '#FF69B4', '#00BFFF', '#32CD32'][Math.floor(Math.random()*4)];
+                div.style.animationDuration = (Math.random()*2+2)+'s';
+                c.appendChild(div);
+                setTimeout(()=>div.remove(), 4000);
             }
         }
     </script>
