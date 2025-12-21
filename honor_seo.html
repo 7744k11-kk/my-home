@@ -202,29 +202,29 @@
             </div>
 
             <!-- 메시지 목록 -->
-            <div id="message-container" class="grid grid-cols-1 gap-8 mt-12">
-                <!-- 초기 예시 메시지 (글씨 크기 조정됨) -->
-                <div id="msg-default-1" class="paper-card bg-gradient-to-br from-yellow-100 to-amber-100 p-8 rounded-3xl text-slate-800 shadow-2xl">
-                    <div class="flex justify-between items-start mb-4">
-                        <i class="fa-solid fa-quote-left text-2xl text-amber-600/30"></i>
-                        <div class="flex gap-3 text-slate-500">
-                            <button onclick="editMessage('msg-default-1')" title="수정" class="hover:text-blue-600 transition text-sm"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteMessage('msg-default-1')" title="삭제" class="hover:text-red-600 transition text-sm"><i class="fa-solid fa-trash"></i></button>
+            <div id="message-container" class="grid grid-cols-1 gap-6 mt-12 max-w-2xl mx-auto">
+                <!-- 초기 예시 메시지 (박스 크기 및 간격 절반으로 축소) -->
+                <div id="msg-default-1" class="paper-card bg-gradient-to-br from-yellow-100 to-amber-100 p-5 rounded-2xl text-slate-800 shadow-2xl">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fa-solid fa-quote-left text-lg text-amber-600/30"></i>
+                        <div class="flex gap-2 text-slate-500 text-xs">
+                            <button onclick="editMessage('msg-default-1')" title="수정" class="hover:text-blue-600 transition"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteMessage('msg-default-1')" title="삭제" class="hover:text-red-600 transition"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
-                    <p class="message-text text-lg font-bold leading-relaxed mb-4">"회사를 위해 헌신해주셔서 감사합니다. 사장님과 함께한 시간들이 큰 자부심이었습니다!"</p>
+                    <p class="message-text text-lg font-bold leading-relaxed mb-3">"회사를 위해 헌신해주셔서 감사합니다. 사장님과 함께한 시간들이 큰 자부심이었습니다!"</p>
                     <p class="sender-text text-sm font-bold text-right text-amber-800/80">- 최성진 드림 -</p>
                 </div>
 
-                <div id="msg-default-2" class="paper-card bg-gradient-to-br from-blue-100 to-cyan-100 p-8 rounded-3xl text-slate-800 shadow-2xl">
-                    <div class="flex justify-between items-start mb-4">
-                        <i class="fa-solid fa-quote-left text-2xl text-blue-600/30"></i>
-                        <div class="flex gap-3 text-slate-500">
-                            <button onclick="editMessage('msg-default-2')" title="수정" class="hover:text-blue-600 transition text-sm"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteMessage('msg-default-2')" title="삭제" class="hover:text-red-600 transition text-sm"><i class="fa-solid fa-trash"></i></button>
+                <div id="msg-default-2" class="paper-card bg-gradient-to-br from-blue-100 to-cyan-100 p-5 rounded-2xl text-slate-800 shadow-2xl">
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fa-solid fa-quote-left text-lg text-blue-600/30"></i>
+                        <div class="flex gap-2 text-slate-500 text-xs">
+                            <button onclick="editMessage('msg-default-2')" title="수정" class="hover:text-blue-600 transition"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteMessage('msg-default-2')" title="삭제" class="hover:text-red-600 transition"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
-                    <p class="message-text text-lg font-bold leading-relaxed mb-4">"따뜻한 말씀과 배려 잊지 못할 거예요. 새로운 출발을 응원합니다!"</p>
+                    <p class="message-text text-lg font-bold leading-relaxed mb-3">"따뜻한 말씀과 배려 잊지 못할 거예요. 새로운 출발을 응원합니다!"</p>
                     <p class="sender-text text-sm font-bold text-right text-blue-800/80">- 신한나 드림 -</p>
                 </div>
             </div>
@@ -329,16 +329,16 @@
 
                 const card = document.createElement('div');
                 card.id = newId;
-                card.className = `paper-card bg-gradient-to-br ${randomGrad} p-8 rounded-3xl text-slate-800 shadow-2xl fade-in`;
+                card.className = `paper-card bg-gradient-to-br ${randomGrad} p-5 rounded-2xl text-slate-800 shadow-2xl fade-in`;
                 card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <i class="fa-solid fa-quote-left text-2xl opacity-20"></i>
-                        <div class="flex gap-3 text-slate-500">
-                            <button onclick="editMessage('${newId}')" title="수정" class="hover:text-blue-600 transition text-sm"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteMessage('${newId}')" title="삭제" class="hover:text-red-600 transition text-sm"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fa-solid fa-quote-left text-lg opacity-20"></i>
+                        <div class="flex gap-2 text-slate-500 text-xs">
+                            <button onclick="editMessage('${newId}')" title="수정" class="hover:text-blue-600 transition"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteMessage('${newId}')" title="삭제" class="hover:text-red-600 transition"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
-                    <p class="message-text text-lg font-bold leading-relaxed mb-4">"${body}"</p>
+                    <p class="message-text text-lg font-bold leading-relaxed mb-3">"${body}"</p>
                     <p class="sender-text text-sm font-bold text-right opacity-70">- ${name} 드림 -</p>
                 `;
                 container.prepend(card);
