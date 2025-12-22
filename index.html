@@ -96,7 +96,12 @@
     </div>
 
     <script>
-        // 리더님께서 새로 발급받으신 API 키를 적용했습니다.
+        /**
+         * [보안 필독] 
+         * 깃허브 Pages 무료 사용을 위해 저장소를 Public으로 변경하셨다면 
+         * 반드시 구글 클라우드 콘솔에서 'HTTP 리퍼러 제한'을 걸어야 합니다.
+         * 주소: https://7744k11-kk.github.io/my-home/*
+         */
         const apiKey = "AIzaSyBW0xKVLeJX5MJVGh_5ehbQCsv2Brq3Fhg"; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'gys-hr-hub';
 
@@ -192,7 +197,8 @@
                     <div class="bg-red-900/40 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-100 message-bubble">
                         죄송합니다. 서버와 통신 중 문제가 발생했습니다. <br><br>
                         <strong>확인 사항:</strong><br>
-                        - 깃허브 Public 전환 여부 및 API 키 제한 설정을 확인하세요.<br>
+                        - 깃허브 저장소를 다시 Public으로 전환했는지 확인하세요.<br>
+                        - 구글 클라우드 콘솔에서 API 키 제한 설정을 다시 확인하세요.<br>
                         - 에러 메시지: ${err.message}
                     </div>`;
             }
