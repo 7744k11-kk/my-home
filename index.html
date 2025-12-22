@@ -35,13 +35,13 @@
     <!-- 메인 비주얼 -->
     <header class="py-20 px-6 text-center">
         <div class="inline-block px-4 py-1 rounded-full bg-slate-800 text-yellow-500 text-xs font-bold mb-4 border border-slate-700">
-            GYS TECH HR MASTER ARCHIVE (FULL SYNTHESIS)
+            GYS TECH HR MASTER ARCHIVE
         </div>
         <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-            포스코 GYS테크<br><span class="text-yellow-500">지능형 인사노무 통합 가이드</span>
+            포스코 GYS테크<br><span class="text-yellow-500">지능형 인사노무 가이드</span>
         </h1>
         <p class="text-slate-400 max-w-2xl mx-auto text-lg">
-            HR혁신그룹 최성진 리더의 개인 아카이브입니다. 직원 편의를 위해 제작되었습니다. 늘 소통하는 HR이 되겠습니다. 감사합니다. <br>전문적인 인사 상담 서비스를 24시간 제공합니다.
+            HR혁신그룹 최성진 리더의 개인 아카이브입니다. <br>최신 통합 규정 데이터를 바탕으로 한 24시간 전문 AI 상담 서비스를 제공합니다.
         </p>
     </header>
 
@@ -52,30 +52,21 @@
                 <i class="fa-solid fa-medal text-3xl text-yellow-500 group-hover:text-slate-900"></i>
             </div>
             <h2 class="text-2xl font-bold mb-4 text-white">Honor & Respect</h2>
-            <p class="text-slate-400 leading-relaxed mb-6">
-                회사를 위해 헌신하신 임원분들의 기록을 기립니다. GYS테크 임원분의 명예로운 발자취를 확인하세요.
-            </p>
-            <div class="text-yellow-500 font-bold flex items-center gap-2">
-                명예의 전당 입장 <i class="fa-solid fa-arrow-right"></i>
-            </div>
+            <p class="text-slate-400 leading-relaxed mb-6">회사를 위해 헌신하신 퇴직 임원분들의 명예로운 기록을 보존합니다.</p>
+            <div class="text-yellow-500 font-bold flex items-center gap-2">명예의 전당 입장 <i class="fa-solid fa-arrow-right"></i></div>
         </a>
-
         <div onclick="toggleChat()" class="glass p-10 rounded-3xl hover-card cursor-pointer group">
             <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500 transition">
                 <i class="fa-solid fa-robot text-3xl text-blue-400 group-hover:text-white"></i>
             </div>
-            <h2 class="text-2xl font-bold mb-4 text-white">Smart HR Assistant</h2>
-            <p class="text-slate-400 leading-relaxed mb-6">
-                규정 원문에 근거한 정확한 상담을 시작합니다. 징계 감액, 복지 혜택, 휴직 절차 등을 질문하세요.
-            </p>
-            <div class="text-blue-400 font-bold flex items-center gap-2">
-                AI 챗봇 상담 시작 <i class="fa-solid fa-comment"></i>
-            </div>
+            <h2 class="text-2xl font-bold mb-4 text-white">Smart HR Welfare</h2>
+            <p class="text-slate-400 leading-relaxed mb-6">배우자 출산휴가 20일, 반반차 제도 등 최신 길라잡이 내용을 안내합니다.</p>
+            <div class="text-blue-400 font-bold flex items-center gap-2">AI 챗봇 상담 시작 <i class="fa-solid fa-comment"></i></div>
         </div>
     </section>
 
     <!-- 🤖 챗봇 위젯 -->
-    <div id="chat-window" class="fixed bottom-6 right-6 w-96 h-[700px] glass rounded-2xl shadow-2xl z-[100] hidden flex flex-col overflow-hidden border border-blue-500/30">
+    <div id="chat-window" class="fixed bottom-6 right-6 w-96 h-[650px] glass rounded-2xl shadow-2xl z-[100] hidden flex flex-col overflow-hidden border border-blue-500/30">
         <div class="bg-blue-600 p-4 flex justify-between items-center shadow-lg">
             <div class="flex items-center gap-3 text-white">
                 <i class="fa-solid fa-robot animate-bounce"></i>
@@ -87,8 +78,8 @@
         <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm bg-slate-900/50">
             <div class="flex gap-2">
                 <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">
-                    반갑습니다! GYS테크의 모든 인사규정 원문과 최신 길라잡이를 마스터한 AI 가이드입니다. <br><br>
-                    <strong>"정직 시 승진 제한은 몇 년이야?"</strong> 또는 <strong>"해외 유학 자녀 학자금 한도가 어떻게 돼?"</strong> 처럼 아주 상세한 내용도 질문해 주세요! 😊
+                    안녕하세요! GYS테크 최신 길라잡이와 통합 규정을 완벽 마스터한 AI 가이드입니다. <br><br>
+                    <strong>"배우자 출산휴가는 며칠이야?"</strong>, <strong>"징계 받으면 상여금이 얼마나 깎여?"</strong> 등 궁금한 점을 편하게 질문해 주세요! 😊
                 </div>
             </div>
         </div>
@@ -104,9 +95,8 @@
     </div>
 
     <script>
-        // API 키 설정: 이 프리뷰 환경에서는 자동으로 제공되지만, 
-        // 외부(GitHub 등)에서는 const apiKey = "내-키"; 형식으로 직접 입력해야 합니다.
-        const apiKey = ""; 
+        // 새로 만드신 API 키를 적용했습니다.
+        const apiKey = "AIzaSyBW0xKVLeJX5MJVGh_5ehbQCsv2Brq3Fhg"; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'gys-hr-hub';
 
         function toggleChat() {
@@ -126,7 +116,7 @@
                 }
                 return await response.json();
             } catch (err) {
-                if (retries > 0 && err.message.includes('429')) { // 429 Too Many Requests 일 때만 지수적 백오프 재시도
+                if (retries > 0 && err.message.includes('429')) {
                     await new Promise(resolve => setTimeout(resolve, delay));
                     return fetchWithRetry(url, options, retries - 1, delay * 2);
                 }
@@ -151,32 +141,34 @@
 
             try {
                 const systemPrompt = `
-                    당신은 포스코 GYS테크의 'HR 지능형 가이드'입니다. 제공된 [GYS테크 통합 규정 및 길라잡이 마스터 데이터]를 기반으로 전문가답게 답변하세요.
+                    당신은 포스코 GYS테크의 '인사노무 지능형 가이드'입니다. 제공된 [GYS테크 통합 인사노무 마스터 데이터]를 기반으로 정확하게 답변하세요.
 
-                    [I. 인사/복무 - 상세 규정]
-                    1. 인사평가: 11월 초~중순 실시. S(125%)~D(0%) 인상률 적용.
-                    2. 휴직: 건강상(최소 15일~최대 2년). 건강상 휴직 시 '통상임금 80%' 지급. 나머지 휴직(육아/가족돌봄 등)은 급여 불지급.
-                    3. 퇴직: 의원면직 시 7일 전 사직원 제출. 정년 만 60세 연말.
-                    4. 징계 및 효력:
-                       - 경고: 상여금 2% 감액.
-                       - 견책: 승진 감점 2점, 상여 3% 감액. 효력 기간 1년.
-                       - 감봉: 직무급 2% & 상여 5% 감액. 승진 1회 제외. 효력 기간 1.5년.
-                       - 정직: 통상임금 30%만 지급 & 상여 10% 감액. 승진 1회 제외. 효력 기간 2년.
+                    [I. 인사/복무 - 최신 업데이트]
+                    1. 직무스킬레벨(SL): SL1~SL7(정비명장) 운영. 호칭 '프로'.
+                    2. 인사평가: 매년 11월 초~중순(3주간). S(125%), A(110%), B+/B(100%), C(90%), D(0%) 인상률 적용.
+                    3. 승진: SL인증자+인사고과 충족자. 매년 1월 시행.
+                    4. 배우자 출산휴가: ★최근 확대 반영 - 실제 근무일 기준 '20일' 부여. (분할 4회 가능).
+                    5. 연차휴가: 반차(4H), 반반차(2H) 운영. 매 2년마다 1일 가산(최대 25일).
+                    6. 징계 및 효력:
+                       - 경고: 상여 2% 감액.
+                       - 견책: 상여 3% 감액, 승진 감점 2점, 효력 1년.
+                       - 감봉: 상여 5% & 직무급 2% 감액, 승진 1회 제외, 효력 1.5년.
+                       - 정직: 통상임금 30%만 지급 & 상여 10% 감액, 승진 1회 제외, 효력 2년.
 
-                    [II. 노무/복지 - 최신 지침]
-                    1. 배우자 출산휴가: 20일 (분할 4회 가능).
-                    2. 연차: 1년미만(1일/월), 1년이상(기본 15일), 매 2년마다 1일 가산(최대 25일). 반차(4H), 반반차(2H) 운영.
-                    3. 수당: 중식비(12만), 자기계발(20만), 직무환경(현장 5만/본사 2.5만).
-                    4. 자녀장학금: 만1~15세 연 100만. 대학 실비. 해외 유학 시 광양제철고(고교) 및 연세대 유사학과(대학) 한도 적용.
-                    5. 식사 지원: 조식(1만), 중/석/철야(8천). 도시락 지원 가능.
-                    6. 출장 여비: 숙박 7만(실비), 소액경비 3.3만(정액). 왕복 50~120km 시 소액경비 1.75만 정액 지급.
-                    7. 주거: 기숙사 2년 거주 가능. 주택임차지원 월 30만(1년).
+                    [II. 노무/복지 - 핵심 데이터]
+                    1. 급여/수당: 중식비(12만), 자기계발(20만-수습 제외), 직무환경(현장 5만/본사 2.5만).
+                    2. 식사 지원: 조식(1만), 중/석/철야(8천), 대수리(5천). 도시락 또는 외부식당 지원.
+                    3. 교육수당: 회사 필요교육(그룹장 3.5만~일반 1.6만), 개인 역량(1.2만). 주말 교육 시 중식 제공.
+                    4. 휴직 급여: 건강상 휴직 시 '통상임금 80%' 지급. 나머지 휴직(육아/가족돌봄 등)은 불지급.
+                    5. 출장 여비: 국내 숙박 7만(실비), 소액경비 3.3만. 왕복 50~120km 시 소액경비 1.75만 정액.
+                    6. 자녀장학금: 만1~15세 연 100만. 대학 실비(8학기). 해외 유학 시 광양제철고/연세대 한도 적용.
+                    7. 복리후생: 복지포인트 연 99만, 휴양시설 연 100P 지급(누적 450P 한도). 장례도우미 4인 및 일회용품 지원.
+                    8. 주거지원: 기숙사 2년 거주 가능, 주택임차지원 월 30만(1년).
 
                     [답변 지침]
-                    - 모든 답변은 위 마스터 데이터를 최우선으로 합니다.
-                    - 징계 및 감액, 출장 거리별 감액 등 상세 수치를 명시하세요.
-                    - 가독성을 위해 마크다운과 불렛 포인트를 사용하세요.
-                    - 해결할 수 없는 복잡한 상담은 "HR혁신그룹 최성진 리더님께 문의하세요"라고 안내하세요.
+                    - 모든 답변에 정확한 수치(원, 일수, %)를 포함하세요.
+                    - 가독성을 위해 강조(**)와 불렛 포인트를 사용하세요.
+                    - 복잡한 상황이나 규정에 없는 예외는 "HR혁신그룹 최성진 리더님께 문의하세요"라고 안내하세요.
                 `;
 
                 const response = await fetchWithRetry(
@@ -192,23 +184,16 @@
                 );
 
                 const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "답변을 생성하지 못했습니다.";
-                
-                const loadingMsg = document.getElementById(loadingId);
-                loadingMsg.innerHTML = `
-                    <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">
-                        ${aiResponse.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
-                    </div>`;
+                document.getElementById(loadingId).innerHTML = `<div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">${aiResponse.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`;
                 
             } catch (err) {
-                console.error("Chat Error:", err);
-                const loadingMsg = document.getElementById(loadingId);
-                loadingMsg.innerHTML = `
+                document.getElementById(loadingId).innerHTML = `
                     <div class="bg-red-900/40 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-100 message-bubble">
                         죄송합니다. 서버와 통신 중 문제가 발생했습니다. <br><br>
                         <strong>확인 사항:</strong><br>
-                        - 일시적 호출 제한(429)일 수 있습니다. 잠시 후 시도하세요.<br>
-                        - 외부 사이트(GitHub 등)라면 API 키 활성화 여부를 확인하세요.<br>
-                        - 에러 내용: ${err.message}
+                        - 깃허브 Private 전환 후 웹사이트 정상 접속 여부 확인<br>
+                        - API 키 활성화 및 할당량 초과 여부 확인<br>
+                        - 에러 메시지: ${err.message}
                     </div>`;
             }
             messages.scrollTop = messages.scrollHeight;
