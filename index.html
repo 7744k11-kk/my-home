@@ -34,13 +34,13 @@
     <!-- 메인 비주얼 -->
     <header class="py-20 px-6 text-center">
         <div class="inline-block px-4 py-1 rounded-full bg-slate-800 text-yellow-500 text-xs font-bold mb-4 border border-slate-700">
-            PERSONAL & PROFESSIONAL ARCHIVE
+            GYS TECH HR ARCHIVE
         </div>
         <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-            사람의 가치를 기록하고<br><span class="text-yellow-500">지능형 서비스</span>를 제공합니다
+            포스코 GYS테크<br><span class="text-yellow-500">지능형 HR 가이드</span>
         </h1>
         <p class="text-slate-400 max-w-2xl mx-auto text-lg">
-            HR혁신그룹 최성진의 개인 아카이브입니다. 퇴직 임원분들의 명예로운 기록을 보존하고, 임직원을 위한 스마트한 복지 안내 서비스를 제공합니다.
+            임직원을 위한 스마트한 인사 노무 안내 서비스를 제공합니다. <br>모든 답변은 회사의 최신 HR규정 및 인사노무 길라잡이에 근거합니다.
         </p>
     </header>
 
@@ -52,10 +52,10 @@
             </div>
             <h2 class="text-2xl font-bold mb-4 text-white">Honor & Respect</h2>
             <p class="text-slate-400 leading-relaxed mb-6">
-                회사를 위해 헌신하신 임원분들의 발자취를 기립니다. GYS테크 임원분의 기록을 만나보세요.
+                회사를 위해 헌신하신 임원분들의 발자취를 기립니다. GYS테크 임원분의 명예로운 기록을 만나보세요.
             </p>
             <div class="text-yellow-500 font-bold flex items-center gap-2">
-                입장하기 <i class="fa-solid fa-arrow-right"></i>
+                명예의 전당 입장 <i class="fa-solid fa-arrow-right"></i>
             </div>
         </a>
 
@@ -65,16 +65,16 @@
             </div>
             <h2 class="text-2xl font-bold mb-4 text-white">Smart HR Welfare</h2>
             <p class="text-slate-400 leading-relaxed mb-6">
-                후생복지, 연차, 사내 규정 등 궁금한 점을 질문하세요. AI 챗봇이 24시간 친절하게 답변해 드립니다.
+                후생복지, 연차, 징계 감액, 주거 지원 등 궁금한 점을 질문하세요. AI 챗봇이 규정에 근거하여 답변해 드립니다.
             </p>
             <div class="text-blue-400 font-bold flex items-center gap-2">
-                챗봇 대화하기 <i class="fa-solid fa-comment"></i>
+                챗봇 상담 시작 <i class="fa-solid fa-comment"></i>
             </div>
         </div>
     </section>
 
     <!-- 🤖 챗봇 위젯 -->
-    <div id="chat-window" class="fixed bottom-6 right-6 w-96 h-[600px] glass rounded-2xl shadow-2xl z-[100] hidden flex flex-col overflow-hidden border border-blue-500/30">
+    <div id="chat-window" class="fixed bottom-6 right-6 w-96 h-[650px] glass rounded-2xl shadow-2xl z-[100] hidden flex flex-col overflow-hidden border border-blue-500/30">
         <div class="bg-blue-600 p-4 flex justify-between items-center shadow-lg">
             <div class="flex items-center gap-3 text-white">
                 <i class="fa-solid fa-robot animate-bounce"></i>
@@ -86,8 +86,8 @@
         <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm bg-slate-900/50">
             <div class="flex gap-2">
                 <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">
-                    반갑습니다! GYS테크 HR 혁신그룹의 AI 가이드입니다. <br><br>
-                    규정 원문과 길라잡이를 모두 학습하여 **휴직, 퇴직, 출장, 포상** 등 모든 인사 노무 사항에 대해 상세히 답변해 드릴 수 있습니다. 😊
+                    안녕하세요! GYS테크 HR 혁신그룹의 AI 가이드입니다. <br><br>
+                    보내주신 **전체 HR규정**과 **길라잡이** 내용을 모두 학습했습니다. 징계 시 급여 감액, 휴직 절차, 출장비 정산 등 상세한 수치까지 안내해 드릴 수 있습니다. 😊
                 </div>
             </div>
         </div>
@@ -149,58 +149,54 @@
             messages.innerHTML += `
                 <div id="${loadingId}" class="flex gap-2">
                     <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400">
-                        <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 규정을 확인하고 있습니다...
+                        <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 규정을 분석 중입니다...
                     </div>
                 </div>`;
             messages.scrollTop = messages.scrollHeight;
 
             try {
                 const systemPrompt = `
-                    당신은 포스코 GYS테크의 'HR 지능형 가이드'입니다. 제공된 [GYS테크 통합 HR 데이터베이스]를 바탕으로 답변하세요.
-                    
-                    [1. 인사 및 승진 (직무스킬레벨 SL)]
-                    - 단계: SL1~SL7 (정비명장). 호칭은 전원 '프로'.
-                    - 인사평가 등급: S(125%), A(110%), B+/B(100%), C(90%), D(0%) 임금인상률 적용.
-                    - 승진: SL 인증자 + 인사고과 충족자. 표준근속: SL1->SL4(각 4~7년), SL5~7(각 4년).
+                    당신은 포스코 GYS테크의 'HR 지능형 가이드'입니다. 제공된 [GYS테크 공식 HR 통합 지식베이스]를 기반으로 정확한 수치와 절차를 안내하세요.
 
-                    [2. 급여 및 각종 수당]
-                    - 구성: 직무스킬급(기초급+가산급), 직책수당, 직무환경수당, 중식비, 자기계발비, 보전수당.
-                    - 고정수당: 중식비(12만원), 자기계발지원금(20만원, 수습 제외), 직무환경수당(현장 5만/본사 2.5만).
+                    [1. 징계 및 급여 감액 규정 - 매우 중요]
+                    - 경고: 서면 경고 조치. 상여금 '2% 감액'.
+                    - 견책: 서면 훈계. 승진 시 감점 '2점'. 상여금 '3% 감액'.
+                    - 감봉: 1~3개월 적용. 승진 '1회 제외'. '직무스킬급 2% 감액' 및 '상여금 5% 감액'.
+                    - 정직: 1~3개월 적용. 승진 '1회 제외'. 신분은 유지하나 직무 종사 불가. '통상임금의 30%만 지급' (70% 삭감). '상여금 10% 감액'.
+                    - 권고해직/징계면직: 징계에 의한 해고.
+
+                    [2. 급여 체계]
+                    - 통상임금 구성: 직무스킬급(기본급) + 직책수당 + 직무환경수당 + 중식비(식대).
+                    - 고정수당: 중식비(12만원), 자기계발지원금(20만원), 직무환경수당(현장 5만/본사 2.5만).
                     - 변동수당: 돌발교통비(평일 22시전 3만, 이후/휴일 8만), 철야수당(4~6시간 7만, 6시간이상 10만).
-                    - 상여금: 성과상여금(영업이익에 따라 600~800%), 명절상여금(설/추석 각 100만원).
+                    - 상여금: 영업이익 기반 성과상여금(최대 800%), 명절상여금(설/추석 각 100만원).
 
-                    [3. 휴직 및 복직]
-                    - 건강상 휴직: 15일 이상 요양 필요 시 최대 2년. 통상임금 80% 지급.
+                    [3. 인사 및 승진]
+                    - SL 단계: SL1~SL7(정비명장). 전원 호칭 '프로'.
+                    - 인사평가 등급별 인상률: S(125%), A(110%), B+/B(100%), C(90%), D(0%).
+                    - 승진 실격 사유: 최근 1년 내 2회 이상 견책/감봉, 보직해임 1개월 이상, 무단결근 3일 등.
+
+                    [4. 휴직 및 복직]
+                    - 건강휴직: 15일 이상 요양 필요 시 최대 2년. '통상임금의 80%' 지급.
                     - 육아휴직: 만 8세 이하 자녀 대상 최대 1년. 급여 불지급.
-                    - 가족돌봄휴직: 최장 90일(1회 30일 이상). 급여 불지급.
-                    - 복직: 사유 소멸 시 복직희망일 5일 전까지 복직원 제출.
+                    - 가족돌봄휴직: 연간 최장 90일(1회 30일 이상). 급여 불지급.
+                    - 복직 절차: 사유 소멸 시 복직희망일 5일 전까지 복직원 제출.
 
-                    [4. 휴가 및 경조사]
-                    - 연차: 1년 미만 1개월 개근 시 1일, 1년 이상 기본 15일(매 2년마다 1일 추가, 최대 25일).
-                    - 청원휴가: 본인결혼(7일), 자녀결혼(2일), 회갑(부모/배우자부모 2일), 사망(본인부모/배우자 7일, 배우자부모 5일).
-                    - 배우자출산휴가: 10일 유급 (분할 사용 가능).
+                    [5. 경조사 및 복리후생]
+                    - 청원휴가: 본인결혼(7일), 자녀결혼(2일), 부모/배우자부모 회갑(2일), 본인부모/배우자 사망(7일).
+                    - 경조금: 본인결혼(50만), 회갑(10만), 사망(본인 200만/배우자 100만).
+                    - 인력지원: 장례 시 장례도우미 4인 및 일회용품(500~1000인분) 지원.
+                    - 자녀장학금: 만1~15세 연 100만원 지원. 고등/대학교 실비 지원(자녀수에 따라 8천만~1.6억 한도).
+                    - 주거지원: 기숙사(성호/목련) 2년 거주 가능. 주택임차지원 월 30만원(1년).
 
-                    [5. 복리후생 상세]
-                    - 자녀장학금: 근속 1년 이상 정규직. 만1~15세 연 100만원. 고교/대학교 실비 지원(2자녀 이하 8천만, 3자녀 1.2억, 4자녀 이상 1.6억 한도).
-                    - 복지포인트: 연간 99만원. 학원, 의료비, 여행, 주유 등 사용 가능.
-                    - 출산장려금: 첫째 100만, 둘째 200만, 셋째이상 300만.
-                    - 기숙사: 성호아파트, 목련빌라 등 입사 후 2년간 거주 가능. 주택임차지원 월 30만원(1년).
-
-                    [6. 퇴직 및 복무]
-                    - 당연퇴직: 사망, 정년(만 60세), 근로계약 만료 등.
-                    - 의원면직: 본인 희망 시 사직원 7일 전 제출.
-                    - 포상: 사장표창(개인 30만/단체 100만), 실장표창(개인 20만/단체 50만).
-                    - 징계: 경고, 견책, 감봉, 정직, 권고해직, 징계면직.
-
-                    [7. 출장 및 여비]
-                    - 교통비: KTX/새마을호 일반석 실비.
-                    - 숙박비: 1박당 7만원 한도 실비.
-                    - 소액경비(식비 등): 1일당 3.3만원 정액.
+                    [6. 출장 여비]
+                    - 국내: KTX 일반석 실비, 숙박비 1박당 7만원 한도 실비, 소액경비(식비) 1일 3.3만원 정액.
+                    - 국외: 숙박비(실비) 일본 200$/북미·유럽 160$ 한도 등 직급별 상이.
 
                     [답변 지침]
-                    - 문서에 명시된 숫자를 정확히 언급하세요.
-                    - 가독성을 위해 불렛 포인트와 마크다운을 사용하세요.
-                    - 모르는 내용은 "인사팀 최성진 프로님께 문의하세요"라고 안내하세요.
+                    - 모든 질문에 규정상의 수치(%, 원, 일수)를 명시하여 신뢰도를 높이세요.
+                    - 가독성을 위해 불렛 포인트와 줄바꿈을 적극 사용하세요.
+                    - 규정에 없는 아주 특이한 케이스는 "HR혁신그룹 최성진 프로님께 개별 상담을 요청해 주세요"라고 안내하세요.
                 `;
 
                 const response = await fetchWithRetry(
@@ -215,7 +211,7 @@
                     }
                 );
 
-                const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "답변을 가져오지 못했습니다.";
+                const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "답변을 생성하지 못했습니다.";
                 
                 const loadingMsg = document.getElementById(loadingId);
                 loadingMsg.innerHTML = `
@@ -227,7 +223,7 @@
                 const loadingMsg = document.getElementById(loadingId);
                 loadingMsg.innerHTML = `
                     <div class="bg-red-900/40 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-100 message-bubble">
-                        서버와 연결이 원활하지 않습니다. 인사팀(최성진)으로 문의 바랍니다.
+                        죄송합니다. 서버 연결 오류입니다. <br>인사팀(최성진)으로 직접 문의 바랍니다.
                     </div>`;
             }
             messages.scrollTop = messages.scrollHeight;
