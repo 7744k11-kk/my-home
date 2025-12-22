@@ -11,6 +11,9 @@
         body { font-family: 'Noto Sans KR', sans-serif; background-color: #0f172a; color: white; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .hover-card:hover { transform: translateY(-10px); transition: all 0.3s ease; border-color: #fbbf24; }
+        #chat-messages::-webkit-scrollbar { width: 4px; }
+        #chat-messages::-webkit-scrollbar-track { background: transparent; }
+        #chat-messages::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -23,7 +26,7 @@
         <div class="hidden md:flex gap-8 text-sm font-medium">
             <a href="#" class="text-yellow-500">Home</a>
             <a href="honor_list.html" class="hover:text-yellow-400 transition">명예의 전당</a>
-            <a href="javascript:void(0)" onclick="toggleChat()" class="hover:text-yellow-400 transition">HR 챗봇</a>
+            <a href="javascript:void(0)" onclick="toggleChat()" class="hover:text-yellow-400 transition text-blue-400 font-bold">HR 챗봇</a>
         </div>
     </nav>
 
@@ -42,7 +45,6 @@
 
     <!-- 메뉴 카드 섹션 -->
     <section class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-8">
-        <!-- 카드 1: 명예의 전당 -->
         <a href="honor_list.html" class="glass p-10 rounded-3xl hover-card block group">
             <div class="w-16 h-16 bg-yellow-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-yellow-500 transition">
                 <i class="fa-solid fa-medal text-3xl text-yellow-500 group-hover:text-slate-900"></i>
@@ -56,7 +58,6 @@
             </div>
         </a>
 
-        <!-- 카드 2: HR 챗봇 -->
         <div onclick="toggleChat()" class="glass p-10 rounded-3xl hover-card cursor-pointer group">
             <div class="w-16 h-16 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500 transition">
                 <i class="fa-solid fa-robot text-3xl text-blue-400 group-hover:text-white"></i>
@@ -71,61 +72,142 @@
         </div>
     </section>
 
-    <!-- 🤖 챗봇 위젯 (처음엔 숨겨짐) -->
-    <div id="chat-window" class="fixed bottom-6 right-6 w-96 h-[500px] glass rounded-2xl shadow-2xl z-[100] hidden flex flex-col overflow-hidden border border-blue-500/30">
-        <div class="bg-blue-600 p-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-robot"></i>
-                <span class="font-bold">HR 복지 안내봇</span>
+    <!-- 🤖 챗봇 위젯 -->
+    <div id="chat-window" class="fixed bottom-6 right-6 w-96 h-[600px] glass rounded-2xl shadow-2xl z-[100] hidden flex flex-col overflow-hidden border border-blue-500/30">
+        <div class="bg-blue-600 p-4 flex justify-between items-center shadow-lg">
+            <div class="flex items-center gap-3 text-white">
+                <i class="fa-solid fa-robot animate-bounce"></i>
+                <span class="font-bold">GYS테크 HR 지능형 가이드</span>
             </div>
-            <button onclick="toggleChat()"><i class="fa-solid fa-xmark"></i></button>
+            <button onclick="toggleChat()" class="text-white hover:rotate-90 transition-transform"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm text-slate-200">
-            <div class="bg-slate-800 p-3 rounded-lg max-w-[80%]">
-                안녕하세요! 최성진의 HR 홈페이지에 오신 것을 환영합니다. 후생복지에 대해 무엇이든 물어보세요!
+        
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm bg-slate-900/50">
+            <div class="flex gap-2">
+                <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200">
+                    반갑습니다! GYS테크 HR 혁신그룹의 AI 가이드입니다. <br><br>
+                    규정 원문과 길라잡이 내용을 바탕으로 **연차, 급여, 승진, 경조사** 등 무엇이든 정확하게 답변해 드릴게요! 😊
+                </div>
             </div>
         </div>
-        <div class="p-4 bg-slate-800/50 flex gap-2">
-            <input id="user-input" type="text" placeholder="질문을 입력하세요..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500">
-            <button onclick="sendMessage()" class="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-500"><i class="fa-solid fa-paper-plane"></i></button>
+
+        <div class="p-4 bg-slate-800/80 border-t border-slate-700 flex gap-2">
+            <input id="user-input" type="text" placeholder="질문을 입력하세요..." 
+                   class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                   onkeypress="if(event.keyCode==13) sendMessage()">
+            <button onclick="sendMessage()" class="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
         </div>
     </div>
 
     <script>
+        const apiKey = ""; 
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'gys-hr-hub';
+
         function toggleChat() {
             const win = document.getElementById('chat-window');
             win.classList.toggle('hidden');
+            if(!win.classList.contains('hidden')) {
+                document.getElementById('user-input').focus();
+            }
+        }
+
+        async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error('API request failed');
+                return await response.json();
+            } catch (err) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithRetry(url, options, retries - 1, delay * 2);
+                }
+                throw err;
+            }
         }
 
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const messages = document.getElementById('chat-messages');
-            if (!input.value.trim()) return;
+            const userText = input.value.trim();
 
-            // 내 메시지 표시
-            messages.innerHTML += `<div class="bg-blue-600/30 p-3 rounded-lg ml-auto max-w-[80%] text-right">${input.value}</div>`;
-            const userText = input.value;
+            if (!userText) return;
+
+            messages.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md">${userText}</div></div>`;
             input.value = '';
-            
-            // 로딩 표시
+            messages.scrollTop = messages.scrollHeight;
+
             const loadingId = 'loading-' + Date.now();
-            messages.innerHTML += `<div id="${loadingId}" class="bg-slate-800 p-3 rounded-lg max-w-[80%]">생각 중...</div>`;
+            messages.innerHTML += `<div id="${loadingId}" class="flex gap-2"><div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 규정을 확인하고 있습니다...</div></div>`;
             messages.scrollTop = messages.scrollHeight;
 
             try {
-                // 💡 [준비사항] 여기에 나중에 Gemini API를 연결할 예정입니다.
-                // 지금은 간단한 테스트 답변만 나오게 해두었습니다.
-                setTimeout(() => {
-                    const loadingMsg = document.getElementById(loadingId);
-                    loadingMsg.innerHTML = `문의하신 '${userText}'에 대한 답변입니다: <br><br> 현재 챗봇은 복지 규정 데이터를 학습 중입니다. 곧 정식 서비스를 시작합니다!`;
-                }, 1000);
+                const systemPrompt = `
+                    당신은 GYS테크의 'HR 지능형 가이드'입니다. 다음 제공된 [GYS테크 통합 HR 지식 베이스]를 바탕으로만 답변하세요.
+                    
+                    [GYS테크 통합 HR 지식 베이스]
+                    1. 인사/승진 (직무스킬레벨 SL)
+                       - SL1~7 단계 운영. 호칭은 '프로'. SL7은 정비명장.
+                       - 승진: SL 인증자 + 인사고과 충족자. 표준근속은 SL1->SL4(각 4~7년), SL5~7(각 4년).
+                       - 평가 등급별 인상률: S(125%), A(110%), B+/B(100%), C(90%), D(0%).
 
+                    2. 급여 및 수당
+                       - 구성: 직무스킬급(기초급+가산급), 직책수당, 직무환경수당, 중식비, 자기계발비, 보전수당.
+                       - 고정수당: 중식비(12만원), 자기계발지원금(20만원), 직무환경수당(현장 5만/본사 2.5만).
+                       - 변동수당: 돌발교통비(평일 22시전 3만, 이후/휴일 8만), 철야수당(4~6시간 7만, 6시간이상 10만).
+                       - 상여금: 성과상여금(흑자시 최대 800%), 명절상여금(설/추석 각 100만원).
+
+                    3. 휴가 및 휴직
+                       - 연차: 1년미만 1개월 개근시 1일, 1년이상 기본 15일, 매 2년마다 1일 추가(최대 25일).
+                       - 청원휴가: 본인결혼(7일), 자녀결혼(2일), 회갑(부모/배우자부모 2일), 사망(배우자/본인부모 7일, 배우자부모 5일).
+                       - 배우자출산휴가: 10일 유급 (분할 사용 가능).
+                       - 질병휴직: 최대 2년, 통상임금 80% 지급.
+
+                    4. 복리후생
+                       - 자녀장학금: 근속 1년이상. 만1~15세 연 100만원. 고등/대학교 실비 지원(한도: 8천만~1.6억).
+                       - 복지포인트: 연 99만원. 복지몰, 의료비, 여행, 자기계발 등 사용 가능.
+                       - 축하금: 첫째 100만, 둘째 200만, 셋째이상 300만. 자격취득(S급 50만~C급 10만).
+                       - 근속포상: 10년(50만) ~ 35년(250만).
+                       - 주거지원: 타지역 거주자 기숙사 거주(2년), 주택임차지원(1년, 월 30만원).
+
+                    5. 출장 및 복무
+                       - 국내여비: 숙박비 7만원 한도 실비, 소액경비 3.3만원 정액.
+                       - 근무시간: 상주 09~18시. 교대 4조 2교대(주간/야간 12시간).
+
+                    [답변 지침]
+                    - 위 데이터에 근거하여 상세하고 친절하게 답변하세요.
+                    - 숫자가 포함된 질문(얼마인가요? 며칠인가요?)에는 정확한 수치를 명시하세요.
+                    - 규정에 없는 아주 예외적인 상황은 "인사팀 최성진 님께 상담을 요청해 주세요"라고 안내하세요.
+                    - 답변은 마크다운 형식을 사용하여 가독성 있게 작성하세요.
+                `;
+
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: userText }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        })
+                    }
+                );
+
+                const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "답변을 생성하지 못했습니다.";
+                document.getElementById(loadingId).innerHTML = `
+                    <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200">
+                        ${aiResponse.replace(/\n/g, '<br>')}
+                    </div>`;
+                
             } catch (err) {
-                document.getElementById(loadingId).innerText = "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+                document.getElementById(loadingId).innerHTML = `
+                    <div class="bg-red-900/30 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-200">
+                        연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.
+                    </div>`;
             }
+            messages.scrollTop = messages.scrollHeight;
         }
     </script>
 </body>
 </html>
-
-
