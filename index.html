@@ -41,7 +41,7 @@
             포스코 GYS테크<br><span class="text-yellow-500">지능형 인사노무 통합 가이드</span>
         </h1>
         <p class="text-slate-400 max-w-2xl mx-auto text-lg">
-            HR혁신그룹 최성진리더의 개인 아카이브입니다. 직원 편의를 위해 제작되었습니다. 늘 소통하는 HR이 되겠습니다. 감사합니다. <br>전문적인 인사 상담 서비스를 24시간 제공합니다.
+            HR혁신그룹 최성진 리더의 개인 아카이브입니다. 직원 편의를 위해 제작되었습니다. 늘 소통하는 HR이 되겠습니다. 감사합니다. <br>전문적인 인사 상담 서비스를 24시간 제공합니다.
         </p>
     </header>
 
@@ -104,7 +104,9 @@
     </div>
 
     <script>
-        const apiKey = "AIzaSyC58lZ5lqIPo0TeWMTMQsF36Loi_mO9l0s"; 
+        // API 키 설정: 이 프리뷰 환경에서는 자동으로 제공되지만, 
+        // 외부(GitHub 등)에서는 const apiKey = "내-키"; 형식으로 직접 입력해야 합니다.
+        const apiKey = ""; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'gys-hr-hub';
 
         function toggleChat() {
@@ -118,10 +120,13 @@
         async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
             try {
                 const response = await fetch(url, options);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) {
+                    const errBody = await response.json().catch(() => ({}));
+                    throw new Error(`Status: ${response.status}. ${errBody.error?.message || 'API 호출 실패'}`);
+                }
                 return await response.json();
             } catch (err) {
-                if (retries > 0) {
+                if (retries > 0 && err.message.includes('429')) { // 429 Too Many Requests 일 때만 지수적 백오프 재시도
                     await new Promise(resolve => setTimeout(resolve, delay));
                     return fetchWithRetry(url, options, retries - 1, delay * 2);
                 }
@@ -141,38 +146,37 @@
             messages.scrollTop = messages.scrollHeight;
 
             const loadingId = 'loading-' + Date.now();
-            messages.innerHTML += `<div id="${loadingId}" class="flex gap-2"><div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 통합 규정 데이터를 분석 중입니다...</div></div>`;
+            messages.innerHTML += `<div id="${loadingId}" class="flex gap-2"><div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 규정 데이터를 정밀 분석 중입니다...</div></div>`;
             messages.scrollTop = messages.scrollHeight;
 
             try {
                 const systemPrompt = `
                     당신은 포스코 GYS테크의 'HR 지능형 가이드'입니다. 제공된 [GYS테크 통합 규정 및 길라잡이 마스터 데이터]를 기반으로 전문가답게 답변하세요.
 
-                    [I. 인사/복무 - 원문 상세]
+                    [I. 인사/복무 - 상세 규정]
                     1. 인사평가: 11월 초~중순 실시. S(125%)~D(0%) 인상률 적용.
-                    2. 휴직: 건강상(최소 15일~최대 2년). 건강상 휴직 시 '통상임금 80%' 지급. 나머지 휴직은 불지급.
+                    2. 휴직: 건강상(최소 15일~최대 2년). 건강상 휴직 시 '통상임금 80%' 지급. 나머지 휴직(육아/가족돌봄 등)은 급여 불지급.
                     3. 퇴직: 의원면직 시 7일 전 사직원 제출. 정년 만 60세 연말.
-                    4. 징계 및 효력 (상벌지침):
-                       - 견책: 승진 감점 2점, 상여 3% 감액. 효력(제한) 기간 1년.
+                    4. 징계 및 효력:
+                       - 경고: 상여금 2% 감액.
+                       - 견책: 승진 감점 2점, 상여 3% 감액. 효력 기간 1년.
                        - 감봉: 직무급 2% & 상여 5% 감액. 승진 1회 제외. 효력 기간 1.5년.
                        - 정직: 통상임금 30%만 지급 & 상여 10% 감액. 승진 1회 제외. 효력 기간 2년.
-                    5. 포상: 성과표창 사장(개인 30만/단체 100만), 실장(개인 20만/단체 50만).
 
-                    [II. 노무/복지 - 최신 업데이트]
-                    1. 배우자 출산휴가: ★20일 (분할 4회 가능).
-                    2. 연차/휴가: 반차(4H), 반반차(2H) 운영. 연차 최대 25일.
+                    [II. 노무/복지 - 최신 지침]
+                    1. 배우자 출산휴가: 20일 (분할 4회 가능).
+                    2. 연차: 1년미만(1일/월), 1년이상(기본 15일), 매 2년마다 1일 가산(최대 25일). 반차(4H), 반반차(2H) 운영.
                     3. 수당: 중식비(12만), 자기계발(20만), 직무환경(현장 5만/본사 2.5만).
-                    4. 돌발교통비: 평일 22시 전(3만), 이후/휴일(8만). 철야수당(4~6H 7만, 6H이상 10만).
-                    5. 자녀장학금: 만1~15세 연 100만. 대학 실비. 해외 유학 시 '광양제철고(고교)' 및 '연세대 유사학과(대학)' 등록금 한도 내 실비.
-                    6. 식사/간식 지원: 조식(1만), 중/석/철야(8천). 대수리 도시락(5천).
-                    7. 출장 여비: 국내 숙박 7만(실비), 소액경비 3.3만(정액). ★왕복 50~120km 시 소액경비 1.75만 정액.
-                    8. 주거/휴양: 기숙사 2년 거주 가능. 임차지원 월 30만(1년). 휴양시설 연 100포인트 지급(성수기 20P, 비수기 10P 차감).
+                    4. 자녀장학금: 만1~15세 연 100만. 대학 실비. 해외 유학 시 광양제철고(고교) 및 연세대 유사학과(대학) 한도 적용.
+                    5. 식사 지원: 조식(1만), 중/석/철야(8천). 도시락 지원 가능.
+                    6. 출장 여비: 숙박 7만(실비), 소액경비 3.3만(정액). 왕복 50~120km 시 소액경비 1.75만 정액 지급.
+                    7. 주거: 기숙사 2년 거주 가능. 주택임차지원 월 30만(1년).
 
                     [답변 지침]
-                    - 텍스트 원문과 PPTX 요약본 중 더 최신이거나 유리한 기준을 우선하세요.
-                    - 징계별 감액 비율과 승진 제한 기간(정직 2년 등)을 정확히 언급하세요.
-                    - 출장비 계산 시 거리별 감액 규정 등 디테일을 놓치지 마세요.
-                    - 모든 수치는 규정을 준수하며, 가독성 있게 마크다운으로 답변하세요.
+                    - 모든 답변은 위 마스터 데이터를 최우선으로 합니다.
+                    - 징계 및 감액, 출장 거리별 감액 등 상세 수치를 명시하세요.
+                    - 가독성을 위해 마크다운과 불렛 포인트를 사용하세요.
+                    - 해결할 수 없는 복잡한 상담은 "HR혁신그룹 최성진 리더님께 문의하세요"라고 안내하세요.
                 `;
 
                 const response = await fetchWithRetry(
@@ -187,7 +191,7 @@
                     }
                 );
 
-                const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "답변을 가져오지 못했습니다.";
+                const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "답변을 생성하지 못했습니다.";
                 
                 const loadingMsg = document.getElementById(loadingId);
                 loadingMsg.innerHTML = `
@@ -196,10 +200,15 @@
                     </div>`;
                 
             } catch (err) {
+                console.error("Chat Error:", err);
                 const loadingMsg = document.getElementById(loadingId);
                 loadingMsg.innerHTML = `
                     <div class="bg-red-900/40 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-100 message-bubble">
-                        죄송합니다. 서버 연결 오류입니다. 관리자(최성진)에게 문의 바랍니다.
+                        죄송합니다. 서버와 통신 중 문제가 발생했습니다. <br><br>
+                        <strong>확인 사항:</strong><br>
+                        - 일시적 호출 제한(429)일 수 있습니다. 잠시 후 시도하세요.<br>
+                        - 외부 사이트(GitHub 등)라면 API 키 활성화 여부를 확인하세요.<br>
+                        - 에러 내용: ${err.message}
                     </div>`;
             }
             messages.scrollTop = messages.scrollHeight;
