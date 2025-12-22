@@ -14,6 +14,7 @@
         #chat-messages::-webkit-scrollbar { width: 4px; }
         #chat-messages::-webkit-scrollbar-track { background: transparent; }
         #chat-messages::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .message-bubble { word-break: break-word; line-height: 1.6; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -84,9 +85,9 @@
         
         <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm bg-slate-900/50">
             <div class="flex gap-2">
-                <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200">
+                <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">
                     반갑습니다! GYS테크 HR 혁신그룹의 AI 가이드입니다. <br><br>
-                    규정 원문과 길라잡이 내용을 바탕으로 **연차, 급여, 승진, 경조사** 등 무엇이든 정확하게 답변해 드릴게요! 😊
+                    연차, 급여, 승진, 경조사 등 궁금한 점을 말씀해 주시면 규정 원문을 바탕으로 답변해 드릴게요! 😊
                 </div>
             </div>
         </div>
@@ -102,7 +103,8 @@
     </div>
 
     <script>
-        const apiKey = ""; 
+        // 발급받으신 API 키가 적용되었습니다.
+        const apiKey = "AIzaSyC58lZ5lqIPo0TeWMTMQsF36Loi_mO9l0s"; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'gys-hr-hub';
 
         function toggleChat() {
@@ -113,10 +115,13 @@
             }
         }
 
+        /**
+         * 지수적 백오프를 적용한 페치 함수
+         */
         async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
             try {
                 const response = await fetch(url, options);
-                if (!response.ok) throw new Error('API request failed');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return await response.json();
             } catch (err) {
                 if (retries > 0) {
@@ -134,46 +139,62 @@
 
             if (!userText) return;
 
-            messages.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md">${userText}</div></div>`;
+            // 사용자 메시지 UI
+            messages.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md message-bubble text-right">
+                        ${userText}
+                    </div>
+                </div>`;
+            
             input.value = '';
             messages.scrollTop = messages.scrollHeight;
 
+            // 로딩 표시
             const loadingId = 'loading-' + Date.now();
-            messages.innerHTML += `<div id="${loadingId}" class="flex gap-2"><div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 규정을 확인하고 있습니다...</div></div>`;
+            messages.innerHTML += `
+                <div id="${loadingId}" class="flex gap-2">
+                    <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400">
+                        <i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 규정을 확인하고 있습니다...
+                    </div>
+                </div>`;
             messages.scrollTop = messages.scrollHeight;
 
             try {
                 const systemPrompt = `
-                    당신은 포스코 GYS테크의 'HR 지능형 가이드'입니다. 다음 제공된 [GYS테크 공식 HR 데이터]를 바탕으로만 답변하세요.
+                    당신은 포스코 GYS테크의 'HR 지능형 가이드'입니다. 제공된 [GYS테크 통합 HR 데이터]를 바탕으로만 답변하세요.
                     
-                    [GYS테크 공식 HR 데이터]
-                    1. 경조사 (회갑 관련 필수 정보)
-                       - 회갑 휴가: 본인 및 배우자 부모 회갑 시 '2일'의 청원휴가 부여. (발생일 기준 적용)
-                       - 회갑 경조금: 직원 또는 배우자 부모 회갑 시 '100,000원(10만원)' 지급.
-                       - 증빙서류: 주민등록등본 또는 가족관계증명서 (발급 1개월 이내).
+                    [GYS테크 통합 HR 데이터 요약]
+                    1. 경조사 (회갑 및 결혼)
+                       - 회갑 휴가: 본인/배우자 부모 회갑 시 2일 (청원휴가)
+                       - 회갑 경조금: 10만원 지원
+                       - 본인 결혼: 휴가 7일, 경조금 50만원
+                       - 자녀 결혼: 휴가 2일, 경조금 30만원
                     
-                    2. 인사/승진 (직무스킬레벨 SL)
-                       - SL1~7 단계 운영. 호칭은 '프로'. SL7은 정비명장(사내 최고 전문가).
-                       - 인사평가 등급 인상률: S(125%), A(110%), B+/B(100%), C(90%), D(0%).
+                    2. 인사 및 승진 (직무스킬레벨 SL)
+                       - SL1~SL7 단계 운영. SL7은 정비명장(사내 최고 전문가).
+                       - 인사평가 등급별 인상률: S(125%), A(110%), B(100%), C(90%), D(0%).
                     
                     3. 급여 및 각종 수당
-                       - 중식비: 월 120,000원.
-                       - 자기계발지원금: 월 200,000원 (수습 3개월 제외).
-                       - 직무환경수당: 본사/스텝 2.5만, 현장 5만.
-                       - 돌발교통비: 평일 22시 전 3만, 이후/휴일 8만.
-                       - 철야수당: 4~6시간 7만, 6시간 이상 10만.
+                       - 중식비: 월 120,000원
+                       - 자기계발지원금: 월 200,000원
+                       - 직무환경수당: 현장 5만원 / 본사 2.5만원
+                       - 돌발교통비: 평일 22시 이전 3만, 이후/휴일 8만
+                       - 철야수당: 4~6시간 7만, 6시간 이상 10만
                     
-                    4. 휴가 및 복지
-                       - 연차: 1년미만 1개월 개근시 1일, 1년이상 기본 15일, 매 2년마다 1일 추가(최대 25일).
-                       - 자녀장학금: 근속 1년이상 정규직. 만1~15세 연 100만원. 고등/대학교 실비 지원.
-                       - 복지포인트: 연 990,000포인트(99만원).
+                    4. 휴가 및 복리후생
+                       - 연차: 1년 미만 1개월 개근 시 1일, 1년 이상 기본 15일(최대 25일).
+                       - 자녀장학금: 근속 1년 이상. 만1~15세 연 100만원. 고등/대학교 실비 지원(한도 8천만~1.6억).
+                       - 복지포인트: 연간 990,000 포인트 지급.
                        - 출산장려금: 첫째 100만, 둘째 200만, 셋째이상 300만.
-                       - 주거지원: 기숙사(성호아파트 등) 2년 거주 가능, 주택임차지원 월 30만원(1년).
+                       - 근속포상: 10년(50만)부터 35년(250만)까지.
+                       - 주거지원: 기숙사 2년 거주, 주택임차지원 월 30만원(1년).
 
-                    [답변 지침]
+                    [지침]
                     - 위 데이터에 근거하여 매우 상세하고 친절하게 답변하세요.
-                    - "학습 중입니다" 같은 답변은 절대 하지 마세요. 모르는 내용은 "인사팀 최성진 프로님께 문의하세요"라고 답변하세요.
-                    - 가독성을 위해 불렛 포인트와 줄바꿈을 적절히 사용하세요.
+                    - 숫자가 포함된 질문에는 정확한 금액이나 일수를 명시하세요.
+                    - 규정에 없는 내용은 "인사팀 최성진 프로님께 문의해 주세요"라고 안내하세요.
+                    - 가독성을 위해 마크다운 형식과 줄바꿈을 적절히 사용하세요.
                 `;
 
                 const response = await fetchWithRetry(
@@ -188,19 +209,23 @@
                     }
                 );
 
-                const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "규정 확인 중 오류가 발생했습니다.";
+                const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "답변을 가져오지 못했습니다.";
                 
                 const loadingMsg = document.getElementById(loadingId);
                 loadingMsg.innerHTML = `
-                    <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200">
+                    <div class="bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">
                         ${aiResponse.replace(/\n/g, '<br>')}
                     </div>`;
                 
             } catch (err) {
                 const loadingMsg = document.getElementById(loadingId);
                 loadingMsg.innerHTML = `
-                    <div class="bg-red-900/30 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-200">
-                        죄송합니다. 서버 연결에 실패했습니다. 인사팀(최성진)으로 직접 문의 부탁드립니다.
+                    <div class="bg-red-900/40 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-100 message-bubble">
+                        죄송합니다. 서버와 연결이 원활하지 않습니다. <br><br>
+                        <strong>관리자 확인 사항:</strong><br>
+                        1. 인터넷 연결 상태를 확인하세요.<br>
+                        2. 발급받으신 API 키가 유효한지 확인하세요.<br>
+                        3. API 사용량이 초과되었는지 확인하세요.
                     </div>`;
             }
             messages.scrollTop = messages.scrollHeight;
