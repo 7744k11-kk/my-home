@@ -14,10 +14,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Replace
-        run: sed -i "s/REPLACE_ME_WITH_API_KEY/${{ secrets.MY_OPENAI_API_KEY }}/g" index.html
+        run: |
+          # index.html에서 REPLACE_ME_WITH_API_KEY 문구를 Secrets 키로 교체
+          sed -i "s/REPLACE_ME_WITH_API_KEY/${{ secrets.MY_OPENAI_API_KEY }}/g" index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
+          force_orphan: true  # 에러 방지를 위해 강제로 배포 브랜치를 새로 만듬
