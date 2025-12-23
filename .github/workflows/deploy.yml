@@ -1,16 +1,21 @@
 name: Deploy
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
 permissions:
   contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Replace
         run: sed -i "s/REPLACE_ME_WITH_API_KEY/${{ secrets.MY_OPENAI_API_KEY }}/g" index.html
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
