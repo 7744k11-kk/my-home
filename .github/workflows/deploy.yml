@@ -28,22 +28,25 @@ jobs:
 
       - name: Build and Replace Key
         run: |
-          # 배포용 임시 폴더 생성
+          # 1. 배포 폴더 생성
           mkdir -p _site
           
-          # 필요한 파일들만 복사
+          # 2. 파일 복사
           cp index.html _site/
           [ -f "data.js" ] && cp data.js _site/
           [ -f "honor_list.html" ] && cp honor_list.html _site/
 
-          # API 키 및 타임스탬프 치환
-          sed -i "s@__OPENAI_KEY__@${{ secrets.MY_OPENAI_API_KEY }}@g" _site/index.html
+          # 3. 키 치환 및 타임스탬프 삽입 (정확한 매칭을 위해 따옴표 포함 치환 권장)
+          # 아래 명령은 index.html 파일 내의 "__OPENAI_KEY__" 문구를 실제 키로 바꿉니다.
+          sed -i 's/__OPENAI_KEY__/${{ secrets.MY_OPENAI_API_KEY }}/g' _site/index.html
           sed -i "s/__BUILD_TIMESTAMP__/$(date +'%Y-%m-%d %H:%M:%S')/g" _site/index.html
           
-          # 키 치환 실패 시 중단
+          # 4. 치환 결과 검증 로그 (실제 키는 마스킹되지만 문구 존재 여부 확인 가능)
           if grep -q "__OPENAI_KEY__" _site/index.html; then
-            echo "API Key replacement failed"
+            echo "치환 실패: 여전히 플레이스홀더가 남아있습니다."
             exit 1
+          else
+            echo "치환 성공: 키가 정상적으로 주입되었습니다."
           fi
 
       - name: Upload artifact
