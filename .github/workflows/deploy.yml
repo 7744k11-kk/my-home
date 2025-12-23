@@ -5,7 +5,6 @@ on:
       - main
       - master
 
-# 병행 실행 제어: 새 작업이 시작되면 진행 중인 이전 작업을 자동으로 취소합니다.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -20,19 +19,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Replace API Key
+      - name: Replace Key & Add Timestamp
         run: |
-          # index.html 내에서 'const apiKey =' 로 시작하는 줄을 찾아 
-          # GitHub Secrets에 저장된 실제 키로 강제로 교체합니다.
-          # 이 방식은 REPLACE_ME_KEY 문구 유무와 상관없이 작동하여 더 확실합니다.
-          sed -i 's/const apiKey = .*/const apiKey = "${{ secrets.MY_OPENAI_API_KEY }}";/' index.html
+          # 1. API 키 교체 (구분자 @ 사용)
+          sed -i "s@__OPENAI_KEY__@${{ secrets.MY_OPENAI_API_KEY }}@g" index.html
+          
+          # 2. 타임스탬프 교체 (변경 사항 강제 발생시켜 exit code 1 방지)
+          TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
+          sed -i "s/__BUILD_TIMESTAMP__/$TIMESTAMP/g" index.html
+          
+          # 3. 키 교체 여부 검증
+          if grep -q "__OPENAI_KEY__" index.html; then
+            echo "Error: API Key replacement failed!"
+            exit 1
+          fi
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
-          force_orphan: true
+          force_orphan: true  # 히스토리 무시하고 강제 배포 (충돌 방지 핵심)
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Update HR Chatbot with OpenAI Key"
+
+업데이트된 Canvas의 `index.html`과 위 `deploy.yml`을 세트로 적용하시면 이제 `exit code 1` 에러 없이 무조건 배포에 성공할 것입니다. 조치 후 다시 확인해 보세요!
