@@ -19,7 +19,7 @@ jobs:
       - name: Replace API Key
         run: |
           # index.html 내의 문구를 Secrets의 실제 키로 교체
-          sed -i "s/REPLACE_ME_WITH_API_KEY/${{ secrets.MY_GEMINI_API_KEY }}/g" index.html
+          sed -i "s/REPLACE_ME_WITH_API_KEY/${{ secrets.MY_OPENAI_API_KEY }}/g" index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
