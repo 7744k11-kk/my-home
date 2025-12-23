@@ -19,18 +19,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Replace Key and Timestamp
+      - name: Build and Prepare Files
         run: |
-          # 1. index.html의 __OPENAI_KEY__를 Secrets에 저장된 실제 키로 교체합니다.
-          # 구분자를 @로 사용하여 키 내부의 특수문자와 충돌하지 않도록 합니다.
-          sed -i "s@__OPENAI_KEY__@${{ secrets.MY_OPENAI_API_KEY }}@g" index.html
+          # 1. 배포용 임시 폴더 생성
+          mkdir public
           
-          # 2. 빌드 타임스탬프를 삽입하여 "변경 사항 없음(exit code 1)" 오류를 방지합니다.
-          # 이 작업은 매번 새로운 배포본을 만들어 냅니다.
-          sed -i "s/__BUILD_TIMESTAMP__/$(date +'%Y-%m-%d %H:%M:%S')/g" index.html
+          # 2. 필요한 파일들만 public 폴더로 복사
+          # 명예의 전당 페이지(honor_list.html) 등이 있다면 여기에 추가하세요.
+          cp index.html public/
+          if [ -f "data.js" ]; then cp data.js public/; fi
+          if [ -f "honor_list.html" ]; then cp honor_list.html public/; fi
+
+          # 3. public 폴더 내의 index.html에서 키 및 타임스탬프 치환
+          sed -i "s@__OPENAI_KEY__@${{ secrets.MY_OPENAI_API_KEY }}@g" public/index.html
+          sed -i "s/__BUILD_TIMESTAMP__/$(date +'%Y-%m-%d %H:%M:%S')/g" public/index.html
           
-          # 3. 키 교체 여부를 검증합니다.
-          if grep -q "__OPENAI_KEY__" index.html; then
+          # 4. 키 교체 검증
+          if grep -q "__OPENAI_KEY__" public/index.html; then
             echo "Error: API Key replacement failed!"
             exit 1
           fi
@@ -39,8 +44,8 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: ./public  # 루트가 아닌 public 폴더만 배포하여 충돌 방지
           force_orphan: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Update HR Chatbot Build: $(date +'%Y-%m-%d %H:%M:%S')"
+          commit_message: "Update Build: $(date +'%Y-%m-%d %H:%M:%S')"
