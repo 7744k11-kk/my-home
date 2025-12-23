@@ -1,51 +1,56 @@
 name: Deploy
 on:
   push:
-    branches:
-      - main
-      - master
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    branches: ["main", "master"]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build and Prepare Files
-        run: |
-          # 1. 배포용 임시 폴더 생성
-          mkdir public
-          
-          # 2. 필요한 파일들만 public 폴더로 복사
-          # 명예의 전당 페이지(honor_list.html) 등이 있다면 여기에 추가하세요.
-          cp index.html public/
-          if [ -f "data.js" ]; then cp data.js public/; fi
-          if [ -f "honor_list.html" ]; then cp honor_list.html public/; fi
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
-          # 3. public 폴더 내의 index.html에서 키 및 타임스탬프 치환
-          sed -i "s@__OPENAI_KEY__@${{ secrets.MY_OPENAI_API_KEY }}@g" public/index.html
-          sed -i "s/__BUILD_TIMESTAMP__/$(date +'%Y-%m-%d %H:%M:%S')/g" public/index.html
+      - name: Build and Replace Key
+        run: |
+          # 배포용 임시 폴더 생성
+          mkdir -p _site
           
-          # 4. 키 교체 검증
-          if grep -q "__OPENAI_KEY__" public/index.html; then
-            echo "Error: API Key replacement failed!"
+          # 필요한 파일들만 복사
+          cp index.html _site/
+          [ -f "data.js" ] && cp data.js _site/
+          [ -f "honor_list.html" ] && cp honor_list.html _site/
+
+          # API 키 및 타임스탬프 치환
+          sed -i "s@__OPENAI_KEY__@${{ secrets.MY_OPENAI_API_KEY }}@g" _site/index.html
+          sed -i "s/__BUILD_TIMESTAMP__/$(date +'%Y-%m-%d %H:%M:%S')/g" _site/index.html
+          
+          # 키 치환 실패 시 중단
+          if grep -q "__OPENAI_KEY__" _site/index.html; then
+            echo "API Key replacement failed"
             exit 1
           fi
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public  # 루트가 아닌 public 폴더만 배포하여 충돌 방지
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Update Build: $(date +'%Y-%m-%d %H:%M:%S')"
+          path: './_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
