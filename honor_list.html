@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>명예의 전당 - HR Archive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap');
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #0f172a; color: white; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen p-8 md:p-20">
+    <div class="max-w-5xl mx-auto">
+        <!-- 뒤로가기 -->
+        <a href="index.html" class="text-slate-400 hover:text-yellow-500 mb-10 inline-flex items-center gap-2 transition">
+            <i class="fa-solid fa-arrow-left"></i> 메인 대시보드로 돌아가기
+        </a>
+
+        <header class="mb-16">
+            <h1 class="text-4xl font-bold mb-4">🏆 명예의 전당</h1>
+            <p class="text-slate-400 text-lg">포스코지와이에스테크의 미래를 열어주신 리더들의 기록입니다.</p>
+        </header>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- 서재석 사장님 카드 -->
+            <a href="honor_seo.html" class="glass group rounded-3xl overflow-hidden hover:border-yellow-500 transition-all duration-300 shadow-2xl block">
+                <div class="h-56 bg-slate-800 relative overflow-hidden">
+                    <!-- 사장님 사진 (이전에 사용하신 링크 그대로 적용) -->
+                    <img src="https://postfiles.pstatic.net/MjAyNTEyMTJfOTUg/MDAxNzY1NTQ4NzQyMzU2.msASzRdPZhZdGIVxJPGU1rNw3kaAYXM5HY6SuMWefDAg.nZs8J27V3wvXExm8MobQis-38qDMqQejdJmwzXJUmDkg.JPEG/%EC%84%9C%EC%9E%AC%EC%84%9D_%EC%82%AC%EC%9E%A5%EB%8B%98.jpg?type=w773" 
+                         alt="서재석 사장님" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"></div>
+                </div>
+                <div class="p-6">
+                    <div class="text-yellow-500 text-xs font-bold mb-1">2026 RETIRED</div>
+                    <h2 class="text-xl font-bold text-white group-hover:text-yellow-400 transition">서재석 사장님</h2>
+                    <p class="text-slate-400 text-sm mt-2">포스코지와이에스테크 대표이사</p>
+                    <div class="mt-4 pt-4 border-t border-slate-700 flex justify-between items-center text-xs text-slate-500">
+                        <span>#존경 #헌신 #감사</span>
+                        <i class="fa-solid fa-chevron-right text-yellow-500"></i>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 다음 임원 추가용 (비어있음) -->
+            <div class="border-2 border-dashed border-slate-800 rounded-3xl flex flex-col items-center justify-center p-10 text-slate-600">
+                <i class="fa-solid fa-user-plus text-4xl mb-4"></i>
+                <p class="text-center font-medium">새로운 기록을<br>준비 중입니다.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
