@@ -15,13 +15,16 @@ jobs:
 
       - name: Replace API Key
         run: |
-          sed -i "s/REPLACE_ME_WITH_API_KEY/${{ secrets.MY_OPENAI_API_KEY }}/g" index.html
+          # sed 구분자를 |로 변경하여 API 키 내부의 / 문자와의 충돌을 방지합니다.
+          # REPLACE_ME_KEY 라는 짧고 확실한 문구로 치환 대상을 변경합니다.
+          sed -i "s|REPLACE_ME_KEY|${{ secrets.MY_OPENAI_API_KEY }}|g" index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
-          force_orphan: true
+          force_orphan: true # 브랜치를 새로 생성하여 충돌을 원천 차단
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Update HR Chatbot with OpenAI Key"
