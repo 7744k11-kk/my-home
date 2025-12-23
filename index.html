@@ -77,7 +77,7 @@
             <div class="flex gap-2">
                 <div class="ai-inner p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">
                     안녕하세요! 포스코 GYS테크 인사노무 가이드입니다. <br><br>
-                    최신 **인사노무 길라잡이(PPT)**와 **통합 규정(PDF)** 내용을 완벽히 학습했습니다. <br>궁금하신 내용을 구체적으로 질문해 주세요! 😊
+                    최신 **인사노무 길라잡이**와 **통합 규정** 내용을 완벽히 학습했습니다. <br>궁금하신 내용을 구체적으로 질문해 주세요! 😊
                 </div>
             </div>
         </div>
@@ -92,8 +92,10 @@
         </div>
     </div>
 
+    <script src="data.js"></script>
+
     <script>
-        // 보이지 않는 금고(Secrets)에서 키를 가져올 수 있도록 변수화했습니다.
+        // 2. API 키 설정 (보안상 주의)
         const apiKey = "REPLACE_ME_WITH_API_KEY"; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'gys-hr-hub';
 
@@ -134,39 +136,32 @@
             messages.scrollTop = messages.scrollHeight;
 
             const loadingId = 'loading-' + Date.now();
-            messages.innerHTML += `<div id="${loadingId}" class="flex gap-2"><div class="ai-inner p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 최신 규정을 분석 중입니다...</div></div>`;
+            messages.innerHTML += `<div id="${loadingId}" class="flex gap-2"><div class="ai-inner p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-400"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i> 규정 데이터를 분석 중입니다...</div></div>`;
             messages.scrollTop = messages.scrollHeight;
 
             try {
+                // 3. data.js가 제대로 로드되었는지 확인하고 프롬프트 조립
+                let regulationData = "";
+                if (typeof HR_DATA !== 'undefined') {
+                    regulationData = HR_DATA;
+                } else {
+                    regulationData = "경고: 규정 데이터 파일(data.js)을 불러오지 못했습니다. 답변이 정확하지 않을 수 있습니다.";
+                }
+
+                // 4. 여기가 핵심입니다. 로드된 데이터(HR_DATA)를 AI에게 주입합니다.
                 const systemPrompt = `
-                    당신은 포스코 GYS테크의 '인사노무 지능형 가이드'입니다. 제공된 [GYS테크 통합 인사노무 마스터 지식베이스]를 기반으로 정확하게 답변하세요.
+                    당신은 포스코 GYS테크의 '인사노무 지능형 가이드'입니다.
+                    아래 제공된 [GYS테크 통합 규정 지식베이스]의 내용에만 근거하여 답변하세요.
+                    
+                    [GYS테크 통합 규정 지식베이스]
+                    ${regulationData}
 
-                    [I. 인사 부문]
-                    1. 직무스킬레벨(SL): SL1~SL7(정비명장) 운영. 전 직원 호칭 '프로'.
-                    2. 인사평가: 11월 초(3주간). 6단계(S~D). 인상률: S(125%), A(110%), B+/B(100%), C(90%), D(0%).
-                    3. 승진: SL인증자+인사고과 충족자. 1월 시행. 표준근속: SL1~4(각 7년/4년), SL5~7(각 4년).
-                    4. 배우자 출산휴가: ★최신규정 - '20일' (실제 근무일 기준, 주말/공휴일 제외). 120일 이내 청구, 최대 4회 분할 가능.
-                    5. 연차/휴가: 반차(4H), 반반차(2H) 운영. 기본 15일, 매 2년마다 1일 가산(최대 25일).
-                    6. 징계 및 효력:
-                       - 경고: 상여 2% 감액.
-                       - 견책: 상여 3% 감액, 승진 감점 2점, 효력 1년.
-                       - 감봉: 상여 5% & 직무급 2% 감액, 승진 1회 제외, 효력 1.5년.
-                       - 정직: 통상임금 30%만 지급(70% 감액) & 상여 10% 감액, 승진 1회 제외, 효력 2년.
-
-                    [II. 노무/복지 부문]
-                    1. 급여/수당: 중식비(12만), 자기계발(20만-수습 제외), 직무환경(현장 5만/본사 2.5만).
-                    2. 식사/간식: 조식(1만), 중/석/철야(8천), 대수리(5천). 도시락 지원.
-                    3. 돌발교통비: 평일 22시 전(3만), 이후/휴일(8만).
-                    4. 철야수당: 22~06시 근무 시. 4~6H(7만), 6H이상(10만).
-                    5. 자녀장학금: 만1~15세(연 100만), 대학 실비(8학기). 한도(2자녀 8천, 3자녀 1.2억, 4자녀 1.6억). 해외 유학 시 연세대/광양제철고 한도 적용.
-                    6. 복지포인트: 연간 99만원. 휴양시설 연 100포인트(누적 450P 한도).
-                    7. 경조사: 결혼(본인 50만/자녀 30만), 회갑(10만), 사망(본인 200만/배우자 100만). 장례도우미 4인 지원.
-                    8. 주거지원: 기숙사 2년 거주 가능, 임차지원 월 30만(1년).
-
-                    [답변 지침]
-                    - 900명 직원의 상담을 담당하므로, 정확한 수치(원, 일수, %)를 반드시 명시하세요.
-                    - 배우자 출산휴가 '20일'과 반반차 '2시간' 등 최신 변경 사항을 명확히 안내하세요.
-                    - 해결하기 어려운 개별 사안은 "HR혁신그룹 최성진 리더님께 문의하세요"라고 답변하세요.
+                    [강력한 답변 원칙 - 반드시 준수할 것]
+                    1. 반드시 위 지식베이스에 있는 내용으로만 답변하세요.
+                    2. 지식베이스에 없는 질문이 들어오면 "죄송합니다. 해당 내용은 현재 규정 자료에 나와있지 않습니다. HR혁신그룹 최성진 리더님께 문의 부탁드립니다."라고 정중히 거절하세요.
+                    3. AI가 가진 일반 상식이나 외부 지식을 섞어서 답변하지 마세요.
+                    4. 모든 답변 끝에는 근거가 된 규정의 출처(예: 취업규칙 제15조, 여비지침 별표1)를 괄호 안에 명시하세요.
+                    5. 900명 직원의 상담을 담당하므로, 정확한 수치(금액, 일수)를 명시하세요.
                 `;
 
                 const response = await fetchWithRetry(
@@ -189,8 +184,8 @@
                     <div class="bg-red-900/40 p-3 rounded-2xl rounded-tl-none border border-red-500/50 max-w-[85%] text-red-100 message-bubble">
                         죄송합니다. 서버와 통신 중 문제가 발생했습니다. <br><br>
                         <strong>확인 사항:</strong><br>
-                        - 깃허브 저장소 Secrets 설정을 확인하세요.<br>
-                        - 구글 클라우드 콘솔 API 키가 활성 상태인지 확인하세요.<br>
+                        - data.js 파일이 같은 폴더에 있는지 확인하세요.<br>
+                        - API 키가 올바른지 확인하세요.<br>
                         - 에러 메시지: ${err.message}
                     </div>`;
             }
