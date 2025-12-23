@@ -90,7 +90,7 @@
     <script src="data.js"></script>
 
     <script>
-        // API 키 설정 (GitHub Actions에 의해 REPLACE_ME_... 부분이 실제 sk-... 키로 바뀝니다)
+        // API 키 설정 (GitHub Actions가 이 줄을 찾아 진짜 키로 갈아 끼웁니다)
         const apiKey = "REPLACE_ME_WITH_API_KEY"; 
 
         function toggleChat() {
@@ -108,7 +108,6 @@
 
             if (!userText) return;
 
-            // 사용자 메시지 추가
             messages.innerHTML += `<div class="flex justify-end"><div class="user-inner text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] shadow-md message-bubble text-right">${userText}</div></div>`;
             input.value = '';
             messages.scrollTop = messages.scrollHeight;
@@ -118,7 +117,6 @@
             messages.scrollTop = messages.scrollHeight;
 
             try {
-                // data.js의 HR_DATA 확인
                 let regulationData = (typeof HR_DATA !== 'undefined') ? HR_DATA : "규정 데이터 로드 실패";
 
                 const systemPrompt = `
@@ -134,7 +132,6 @@
                     3. 답변 끝에 반드시 출처 규정(예: 제0조)을 명시하세요.
                 `;
 
-                // OpenAI API 호출 (Chat Completions)
                 const response = await fetch("https://api.openai.com/v1/chat/completions", {
                     method: "POST",
                     headers: {
@@ -158,8 +155,6 @@
                 }
 
                 const aiResponse = result.choices[0].message.content;
-                
-                // 로딩 메시지 제거 및 AI 답변 표시
                 document.getElementById(loadingId).innerHTML = `<div class="ai-inner p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%] text-slate-200 message-bubble">${aiResponse.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</div>`;
                 
             } catch (err) {
